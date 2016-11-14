@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using NotesAPIService.Models;
+using NotesAPIService.Filters;
 
 namespace NotesAPIService.Controllers
 {
@@ -17,28 +18,45 @@ namespace NotesAPIService.Controllers
         private NotesAPIServiceContext db = new NotesAPIServiceContext();
 
         // GET: api/NotesDatas/test11@test.com
-        public IQueryable<NotesData> GetNotesDatas(string userid)
+        
+        public IQueryable<NotesData> GetNotesDatas(string id)
         {
 
-            if (userid == "") userid = "test11@test.com";
-            IQueryable<NotesData> results = db.NotesDatas.Where(x => x.UserID == userid);
+            if (id == "t") id = "test11@test.com";
+            IQueryable<NotesData> results = db.NotesDatas.Where(x => x.UserID == id);
             
             return results;
         
         }
 
         // GET: api/NotesDatas
-        public IQueryable<NotesData> GetNotesDatas()
-        {
-            return db.NotesDatas;
-        }
+        //public IQueryable<NotesData> GetNotesDatas()
+        //{
+        //    return db.NotesDatas;
+        //}
 
+        // GET: api/NotesData/5
+        [Route("api/NotesData/{id}", Name = "NotesData")]
+        [HttpGet]
+        [ResponseType(typeof(NotesData))]
+        public IHttpActionResult NotesData(string id)
+        {
+            //NotesData notesData = db.NotesDatas.Find(id);
+            NotesData notesData = db.NotesDatas.SingleOrDefault(m => m.GuidID == new Guid(id));
+            
+            if (notesData == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(notesData);
+        }
 
         // GET: api/NotesDatas/test11@test.com/5
         [ResponseType(typeof(NotesData))]
-        public IHttpActionResult GetNotesDataUser(string userid, string noteid)
+        public IHttpActionResult GetNotesDataUser(string id, string noteid)
         {
-            List<NotesData> notesData = db.NotesDatas.Where(x => x.UserID == userid && x.GuidID == new Guid(noteid)).ToList();
+            NotesData notesData = db.NotesDatas.FirstOrDefault(x => x.UserID == id && x.GuidID == new Guid(noteid));
 
             if (notesData == null)
             {
@@ -48,47 +66,33 @@ namespace NotesAPIService.Controllers
             return Ok(notesData);
         }
 
-        // GET: api/NotesDatas/5
-        [ResponseType(typeof(NotesData))]
-        public IHttpActionResult GetNotesData(string noteid)
-        {
-            NotesData notesData = db.NotesDatas.Find(noteid);
-            if (notesData == null)
-            {
-                return NotFound();
-            }
 
-            return Ok(notesData);
-        }
 
         // PUT: api/NotesDatas/5
+        [ValidateHttpAntiForgeryToken]
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutNotesData(string userid, NotesData notesData)
+        public IHttpActionResult PutNotesData(string id, NotesData notesData)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (userid != notesData.UserID)
+            if (id != notesData.UserID)
             {
                 return BadRequest();
             }
 
             db.Entry(notesData).State = EntityState.Modified;
-            //HttpResponseMessage response;
-
+            
             try
             {
                 db.SaveChanges();
-
-                //response = Request.CreateResponse<NotesData>(HttpStatusCode.Created, notesData);
-                //response.Headers.Location = new Uri(Request.RequestUri, "/api/notesdatas/" + notesData.GuidID.ToString());
             }
 
             catch (DbUpdateConcurrencyException)
             {
-                if (!NotesDataExists(userid))
+                if (!NotesDataExists(id))
                 {
                     return NotFound();
                 }
@@ -102,6 +106,7 @@ namespace NotesAPIService.Controllers
         }
 
         // POST: api/NotesDatas
+        [ValidateHttpAntiForgeryToken]
         [ResponseType(typeof(NotesData))]
         public IHttpActionResult PostNotesData(NotesData notesData)
         {
@@ -132,6 +137,7 @@ namespace NotesAPIService.Controllers
         }
 
         // DELETE: api/NotesDatas/5
+        [ValidateHttpAntiForgeryToken]
         [ResponseType(typeof(NotesData))]
         public IHttpActionResult DeleteNotesData(string id)
         {

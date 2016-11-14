@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
+
 namespace NotesAPIService.Models
 {
     public class NotesAPIServiceContext : DbContext
@@ -20,6 +21,6 @@ namespace NotesAPIService.Models
             this.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
         }
 
-        public System.Data.Entity.DbSet<NotesAPIService.Models.NotesData> NotesDatas { get; set; }
+        public DbSet<NotesData> NotesDatas { get; set; }
     }
 }

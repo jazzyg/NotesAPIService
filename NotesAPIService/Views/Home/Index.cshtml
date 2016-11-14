@@ -1,4 +1,57 @@
-﻿<div class="jumbotron">
+﻿@section Scripts {
+    @Scripts.Render("~/bundles/knockout")
+    <script type="text/javascript">
+        @functions{
+           public string TokenHeaderValue()
+           {
+              string cookieToken, formToken;
+              AntiForgery.GetTokens(null, out cookieToken, out formToken);
+              return cookieToken + ":" + formToken;
+           }
+        }
+
+       function NotesViewModel() {
+          var self = this;
+          self.notes = ko.observableArray([]);
+          self.addNote = function () {
+
+             $.ajax({
+                type: "post",
+                url: "api/notes",
+                data: $("#addNote").serialize(),
+                dataType: "json",
+                success: function (value) {
+                   self.notes.push(value);
+                },
+                headers: {
+                   'RequestVerificationToken': '@TokenHeaderValue()'
+                }
+             });
+
+          }
+          self.removeNote = function (note) {
+             $.ajax({
+                type: "DELETE",
+                url: note.Self,
+                success: function () {
+                   self.notes.remove(note);
+                },
+                headers: {
+                   'RequestVerificationToken': '@TokenHeaderValue()'
+                }
+
+             });
+          }
+
+          $.getJSON("api/notes", function (data) {
+             self.notes(data);
+          });
+       }
+       ko.applyBindings(new NotesViewModel());
+    </script>
+}
+
+<div class="jumbotron">
     <h1>ASP.NET</h1>
     <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
     <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
