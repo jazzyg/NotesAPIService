@@ -9,6 +9,7 @@ using System.Web.Http;
 
 namespace NotesAPIService.Results
 {
+    //Created outside
     public class ChallengeResult : IHttpActionResult
     {
         public ChallengeResult(string loginProvider, ApiController controller)

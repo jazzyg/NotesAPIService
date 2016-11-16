@@ -48,7 +48,7 @@ namespace NotesAPIService
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
-            //    clientId: "",
+            //    clientId: "8193e35a-f0d8-41ce-8a8a-56890a888d44",   //pwd: MNTAfLFherpPcmn5bibz8KC
             //    clientSecret: "");
 
             //app.UseTwitterAuthentication(
@@ -59,11 +59,11 @@ namespace NotesAPIService
             //    appId: "",
             //    appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                ClientId = "409582706250-g17d2iv96ftkr88e1vlh57b12eh9mu3p.apps.googleusercontent.com",
+                ClientSecret = "0QwHKmnDjjqMw69Bap4hReUq"
+            });
         }
     }
 }

@@ -1,0 +1,73 @@
+<div data-role="view" data-title="Environments" id="environments" data-init="envViewInit" data-layout="drawer-layout" data-reload="true" data-use-native-scrolling="true">
+    <header data-role="header">
+        <div data-role="navbar">
+            <a class="nav-button" data-align="left" data-role="backbutton" id="environmentCancel">Cancel</a>
+            <span data-role="view-title"></span>
+            <a class="km-primary right-button" data-align="right" data-role="button" data-rel="modalview" href="#env-add-modalview" data-icon="add" id="env-open-button">Add</a>
+        </div>
+    </header>
+    <div id="envGrid"></div>
+    <ul id="envListView" class="main-menu"></ul>
+
+    <script type="text/x-kendo-template" id="environment-template">
+        <a class="km-listview-link"> #=text# </a>
+    </script>
+
+</div>
+
+<div data-role="modalview" id="env-add-modalview" style="width: 90%;">
+    <div data-role="header">
+        <div data-role="navbar">
+            <span>Add Environment</span>
+            <a data-click="closeEnvModalView" data-role="button" data-align="right">Cancel</a>
+        </div>
+    </div>
+
+    <ul data-role="listview" data-style="inset">
+        <li><label for="env-add-text">Text: <input type="text" id="env-add-text" /></label></li>
+        <li><label for="env-add-url">Url: <input type="text" id="env-add-url" /></label></li>
+        <li><label for="env-add-user">Username: <input type="text" id="env-add-user" /></label></li>
+        <li><label for="env-add-pass">Password: <input type="password" id="env-add-pass" /></label></li>
+    </ul>
+    <div data-role="footer">
+        <div data-role="navbar">
+            <a data-click="saveEnvModalView" id="modalview-save-button" type="button" data-role="button" data-align="right">Save</a>
+            <a data-click="closeEnvModalView" id="modalview-cancel-button" type="button" data-role="button" data-align="right">Cancel</a>
+        </div>
+    </div>
+</div>
+
+<div data-role="view" id="env-edit-detailview" data-show="envDetailShow" data-init="envDetailInit" data-title="Details">
+    <header data-role="header">
+        <div data-role="navbar">
+            <a class="nav-button" data-align="left" data-role="backbutton" id="envCancel">Cancel</a>
+            <span data-role="view-title"></span>
+            <a id="env-delete-button" data-align="right" data-role="button"  data-role="button" class="km-primary right-button" data-icon="trash">Delete</a>
+        </div>
+    </header>
+
+    <form>
+        <ul data-role="listview" data-style="inset" onclick="">
+            <li>
+                <label class="km-label-above">Name
+                    <input type="text" data-bind="value: text"/>
+                </label>
+            </li>
+            <li>
+                <label class="km-label-above">URL
+                    <textarea data-role="editor"
+                              data-tools="[]"
+                              data-bind="value: text,
+                                 events: { change: onChange }"
+                              style="height: 200px;"></textarea>
+                </label>
+            </li>
+        </ul>
+    </form>
+    <Br />
+    <div class="action-buttons">
+        <a class="km-justified km-primary km-large" class="km-primary" data-role="button" id="done">Save</a>
+    </div>
+
+
+</div>

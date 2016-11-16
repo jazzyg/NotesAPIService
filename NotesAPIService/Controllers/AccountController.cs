@@ -187,9 +187,11 @@ namespace NotesAPIService.Controllers
             {
                 return GetErrorResult(result);
             }
+            //await UserManager.AddToRoleAsync(User.IsInRole("canEdit"));
 
             return Ok();
         }
+        
 
         // POST api/Account/RemoveLogin
         [Route("RemoveLogin")]

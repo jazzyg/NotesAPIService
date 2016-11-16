@@ -6,6 +6,7 @@ using System.Web.Http;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json.Serialization;
 using System.Net.Http.Formatting;
+using NotesAPIService.Filters;
 
 namespace NotesAPIService
 {
@@ -39,6 +40,9 @@ namespace NotesAPIService
                     StringComparison.InvariantCultureIgnoreCase,
                     true,
                     "application/json"));
+
+            // Enforce HTTPS
+            config.Filters.Add(new Filters.RequireHttpsAttribute());
         }
     }
 }
