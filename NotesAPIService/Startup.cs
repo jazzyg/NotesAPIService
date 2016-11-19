@@ -13,6 +13,9 @@ namespace NotesAPIService
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
+            //HttpConfiguration config = new HttpConfiguration();
+            //WebApiConfig.Register(config);
+            //app.UseWebApi(config);
         }
     }
 }

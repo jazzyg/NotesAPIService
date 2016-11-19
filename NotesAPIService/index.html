@@ -19,7 +19,47 @@
 
     
     <script>
+        
+        var data = $('#regForm').serialize() + "&grant_type=password";
+        $.post('/token', data).always(showResponse);
 
+        function showResponse(object) {
+            $scope.output = JSON.stringify(object, null, 4);
+            $scope.$apply();
+        };
+
+        function authenticateUser(credentials) {
+            var body = {
+                grant_type: 'password',
+                username: credentials.name,
+                password: credentials.password
+            };
+
+            $.ajax({
+                url: 'https://localhost:44334/token',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                /* data: JSON.stringify(body), /* wrong */
+                data: body, /* right */
+                complete: function (result) {
+                    //called when complete
+                    alert(result);
+                },
+
+                success: function (result) {
+                    //called when successful
+                    alert(result);
+                },
+
+                error: function (result) {
+                    //called when there is an error
+                    alert(result);
+                },
+            });
+            session.isAuthenticated(true);
+            return true;
+        }
         var uri = 'api/notesdatas';
 
     $(document).ready(function () {

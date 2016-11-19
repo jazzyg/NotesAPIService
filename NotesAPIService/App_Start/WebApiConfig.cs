@@ -41,8 +41,11 @@ namespace NotesAPIService
                     true,
                     "application/json"));
 
+            //http://bitoftech.net/2014/06/01/token-based-authentication-asp-net-web-api-2-owin-asp-net-identity/
+            var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
+            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             // Enforce HTTPS
-            config.Filters.Add(new Filters.RequireHttpsAttribute());
+            //config.Filters.Add(new Filters.RequireHttpsAttribute());
         }
     }
 }
