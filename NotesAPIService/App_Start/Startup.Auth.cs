@@ -13,12 +13,18 @@ using NotesAPIService.Models;
 
 namespace NotesAPIService
 {
+    
     public partial class Startup
     {
+
+
+        //public const string ExternalCookieAuthenticationType = CookieAuthenticationDefaults.ExternalAuthenticationType;
+        //public const string ExternalOAuthAuthenticationType = "ExternalToken";
+
         public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 
         public static string PublicClientId { get; private set; }
-
+       
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
@@ -64,6 +70,7 @@ namespace NotesAPIService
                 ClientId = "409582706250-g17d2iv96ftkr88e1vlh57b12eh9mu3p.apps.googleusercontent.com",
                 ClientSecret = "0QwHKmnDjjqMw69Bap4hReUq"
             });
+
         }
     }
 }

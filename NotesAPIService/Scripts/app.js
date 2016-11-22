@@ -50,7 +50,7 @@
 
         $.ajax({
             type: 'GET',
-            url: '/api/values',
+            url: 'api/NotesDatas',
             headers: headers
         }).done(function (data) {
             self.result(data);
@@ -73,7 +73,7 @@
             contentType: 'application/json; charset=utf-8',
             data: JSON.stringify(data)
         }).done(function (data) {
-            self.result("Done!");
+            self.result("Register Done!");
         }).fail(showError);
     }
 
@@ -93,8 +93,31 @@
             data: loginData
         }).done(function (data) {
             self.user(data.userName);
+                // Cache the access token in session storage.
+                sessionStorage.setItem(tokenKey, data.access_token);
+                self.result("Logged!");
+        }).fail(showError);
+    }
+
+    self.externallogin = function () {
+        self.result('');
+        self.errors.removeAll();
+
+        var externalloginData = {
+            grant_type: 'password',
+            username: self.externalloginEmail(),
+            password: self.externalloginPassword()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/Token',
+            data: externalloginData
+        }).done(function (data) {
+            self.user(data.userName);
             // Cache the access token in session storage.
             sessionStorage.setItem(tokenKey, data.access_token);
+            self.result("external Logged!");
         }).fail(showError);
     }
 
@@ -114,6 +137,7 @@
             // Successfully logged out. Delete the token.
             self.user('');
             sessionStorage.removeItem(tokenKey);
+            self.result("Logged!");
         }).fail(showError);
     }
 }
