@@ -191,8 +191,7 @@ function deleteEnv(id)
 
 function saveEnvModalView(id) {
     //var localData = getStickyData();
-    
-    var data= {} ;  
+    var data= {} ;
     data.userID = sessionStorage.getItem(loggedUser);
     data.Notes= $("#env-add-text").val();
 
