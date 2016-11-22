@@ -90,14 +90,14 @@ namespace NotesServiceWindowsClient
 
         static async Task RunAsync()
         {
-            client.BaseAddress = new Uri("https://localhost:44334/");
+            client.BaseAddress = new Uri("https://notesapiservice.azurewebsites.net/");
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             try
             {
                 // Create a new notesData
-                NotesData notesData = new NotesData { UserID = "Test12@test.com", Notes = "" };
+                NotesData notesData = new NotesData { UserID = "Test11@test.com", Notes = "" };
 
                 var url = await CreateNotesDataAsync(notesData);
                 Console.WriteLine($"Created at {url}");
@@ -107,7 +107,7 @@ namespace NotesServiceWindowsClient
                 ShowNotesData(notesData);
 
                 // Update the notesData
-                Console.WriteLine("Updating price...");
+                Console.WriteLine("Updating notes...");
                 notesData.Notes = "Updated note from windows client";
                 await UpdateNotesDataAsync(notesData);
 
