@@ -1,19 +1,19 @@
 ﻿function ViewModel() {
-    var self = this;
+    //var self = this;
     var webapiserviceUrl = "https://notesapiservice.azurewebsites.net/api";
 
     var tokenKey = 'accessToken';
 
-    self.result = ko.observable();
-    //self.user = ko.observable();
+    //self.result = ko.observable();
+    ////self.user = ko.observable();
 
-    self.register-email = ko.observable();
-    self.register-password = ko.observable();
-    self.register-password2 = ko.observable();
+    //self.register-email = ko.observable();
+    //self.register-password = ko.observable();
+    //self.register-password2 = ko.observable();
 
-    //self.login-email = ko.observable();
-    //self.login-password = ko.observable();
-    self.errors = ko.observableArray([]);
+    ////self.login-email = ko.observable();
+    ////self.login-password = ko.observable();
+    //self.errors = ko.observableArray([]);
 
     function showError(jqXHR) {
 
@@ -56,54 +56,54 @@
     //    }).fail(showError);
     //}
 
-    self.appregister = function () {
-        self.result('');
-        self.errors.removeAll();
+    //self.appregister = function () {
+    //    self.result('');
+    //    self.errors.removeAll();
 
-        var data = {
-            Email: self.register-email(),
-            Password: self.register-password(),
-            ConfirmPassword: self.register-password2()
-        };
+    //    var data = {
+    //        Email: $('#register-email').val(),
+    //        Password: $('#register-password').val(),
+    //        ConfirmPassword: $('#register-password2').val(),
+    //    };
 
-        $.ajax({
-            type: 'POST',
-            url: webapiserviceUrl + '/api/Account/Register',
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(data)
-        }).done(function (data) {
-            self.result("Registeration Done, Pls login!");
-            closeModalViewRegister();
-            openModalViewLogin();
-        }).fail(showError);
-    }
+    //    $.ajax({
+    //        type: 'POST',
+    //        url: webapiserviceUrl + '/api/Account/Register',
+    //        contentType: 'application/json; charset=utf-8',
+    //        data: JSON.stringify(data)
+    //    }).done(function (data) {
+    //        self.result("Registeration Done, Pls login!");
+    //        closeModalViewRegister();
+    //        openModalViewLogin();
+    //    }).fail(showError);
+    //}
 
-    self.applogin = function () {
-        self.result('');
-        self.errors.removeAll();
+    //self.applogin = function () {
+    //    self.result('');
+    //    self.errors.removeAll();
 
-        var loginData = {
-            grant_type: 'password',
-            username: self.register-email(),
-            password: self.register-password(),
-            
-        };
+    //    var loginData = {
+    //        grant_type: 'password',
+    //        username: $('#login-email').val(),
+    //        password: $('#login-password').val(),
+    //    };
 
-        $.ajax({
-            type: 'POST',
-            url: webapiserviceUrl + '/Token',
-            data: loginData
-        }).done(function (data) {
-            self.user(data.userName);
-            // Cache the access token in session storage.
-            sessionStorage.setItem(tokenKey, data.access_token);
-            sessionStorage.setItem(loggedUser, data.userName);
+    //    $.ajax({
+    //        type: 'POST',
+    //        url: webapiserviceUrl + '/Token',
+    //        data: loginData
+    //    }).done(function (data) {
+    //        self.user(data.userName);
+    //        // Cache the access token in session storage.
+    //        sessionStorage.setItem(tokenKey, data.access_token);
+    //        sessionStorage.setItem(loggedUser, data.userName);
 
-            self.result("Logged!");
-            closeModalViewLogin();
+    //        self.result("Logged!");
+    //        closeModalViewLogin();
 
-        }).fail(showError);
-    }
+    //    }).fail(showError);
+    //}
+
     //To be implemented
     self.appexternallogin = function () {
         self.result('');

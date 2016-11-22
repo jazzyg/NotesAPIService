@@ -20,6 +20,9 @@ var app;
 var localDebug = true;
 var CREDENTIALS = "credentials";
 var STICKYDATA = "sticky";
+var USERDATA = "user";
+var TOKENKEY = "token";
+
 var serviceurl = "https://notesapiservice.azurewebsites.net/api";
 
 document.addEventListener("deviceready", onDeviceReady, false);
@@ -41,56 +44,82 @@ function  openWindow(url) {
 }
 
 function NewGuid() {
-    //guid generated at server side
-    return '00000000-0000-0000-0000-000000000000';
-//return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-//        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-//        return v.toString(16);
-//    });
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
 }
 
 function getStickyData()
 {
-    var localStickyData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
-    if (localStickyData == null) {
-        localStickyData = { "GetNotesResult": [] };
-
-        window.localStorage.setItem(STICKYDATA, JSON.stringify(localStickyData));
-    }
-    if(localStickyData.GetNotesResult.length==0)
-    {
-        syncStickyData();
-    }
-    return localStickyData;
+    syncStickyData();
+    return jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
 }
+
 function closeModalViewLogin() {
     $("#modalview-login").kendoMobileModalView("close");
     $("#modalview-register").kendoMobileModalView("close");
 }
+
 function OnModalViewRegister() {
     $("#modalview-login").kendoMobileModalView("close");
-    $("#modalview-register").kendoMobileModalView("close");
-    appregister;
+   
+    var data = {
+        Email: $('#register-email').val(),
+        Password: $('#register-password').val(),
+        ConfirmPassword: $('#register-password2').val(),
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: webapiserviceUrl + '/api/Account/Register',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(data)
+    }).done(function (data) {
+        $("#modalview-register").kendoMobileModalView("close");
+        alert("Registration complete!");
+    }).fail(showError);
 }
+
 function closeModalViewRegister() {
     $("#modalview-login").kendoMobileModalView("close");
     $("#modalview-register").kendoMobileModalView("close");
 }
 
-function OnModalViewLogin()
-{
+function openModalViewLogin() {
     $("#modalview-register").kendoMobileModalView("close");
     $("#modalview-login").kendoMobileModalView("open");
-    applogin;
+}
+
+function OnModalViewLogin()
+{
+  
+    var loginData = {
+        grant_type: 'password',
+        username: $('#login-email').val(),
+        password: $('#login-password').val(),
+    };
+    $.ajax({
+        type: 'POST',
+        url: webapiserviceUrl + '/Token',
+        data: loginData
+    }).done(function (data) {
+        // Cache the access token in session storage.
+        window.localStorage.setItem(USERDATA, data.userName);
+        window.localStorage.setItem(TOKENKEY, data.access_token);
+        $("#modalview-register").kendoMobileModalView("close");
+        $("#modalview-login").kendoMobileModalView("open");
+
+    }).fail(showError);
 }
 
 function syncStickyData()
 {
     
     var jsondata = {};
-    var token = sessionStorage.getItem(tokenKey);
-    var usr = sessionStorage.getItem(loggedUser)
-
+    var usr = window.localStorage.getItem(USERDATA);
+    var token = window.localStorage.getItem(TOKENKEY);
+  
     if (token) {
         headers.Authorization = 'Bearer ' + token;
     }
@@ -105,7 +134,7 @@ function syncStickyData()
         contentType: 'application/json',
         url: serviceurl + 'notesdatas/' + usr,
         async: false,
-        data:headers,
+        //data:headers,
         beforeSend: function (xhr) {
             // if (request.pass != '') {
             //     console.log('beforeSend Build Details');
@@ -113,12 +142,18 @@ function syncStickyData()
             //     var password = request.pass;
             //     console.log(btoa(username + ":" + password))
             //     xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
-            //     xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
+            xhr.setRequestHeader("Authorization", 'Bearer ' + token);
             // }
         },
         timeout: 3000, // sets timeout to 3 seconds
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+            var localStickyData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
+            if (localStickyData == null) {
+                localStickyData = { "GetNotesResult": [] };
+
+                window.localStorage.setItem(STICKYDATA, JSON.stringify(localStickyData));
+            }
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             alert(textStatus + "Error: " + errorThrown);
@@ -148,14 +183,36 @@ function logout()
     window.localStorage[STICKYDATA] = JSON.stringify(localData);
     window.localStorage[CREDENTIALS] = JSON.stringify(localData);
     kendo.mobile.application.navigate("index");
-    applogout;
+
+    var usr = window.localStorage.getItem(USERDATA);
+    var token = window.localStorage.getItem(TOKENKEY);
+   
+        // Log out from the cookie based logon.
+        var headers = {};
+        if (token) {
+            headers.Authorization = 'Bearer ' + token;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: webapiserviceUrl + '/api/Account/Logout',
+            headers: headers
+        }).done(function (data) {
+            // Successfully logged out. Delete the token.
+            window.localStorage.setItem(USERDATA, '');
+            window.localStorage.setItem(TOKENKEY, '');
+
+        }).fail(showError);
 }
 
 function deleteEnv(id)
 {
-    var localData = getStickyData();
-    var usr = sessionStorage.getItem(loggedUser);
 
+    var usr = window.localStorage.getItem(USERDATA);
+    var token = window.localStorage.getItem(TOKENKEY);
+
+    var localData = getStickyData();
+ 
     for(var i=0; i<localData.GetNotesResult.length; i++){
         if(localData.GetNotesResult[i].GuidID === id){
             localData.GetNotesResult.splice(i, 1);
@@ -166,7 +223,6 @@ function deleteEnv(id)
     }
     
     var data = {};
-    var token = sessionStorage.getItem(tokenKey);
 
     if (token) {
         headers.Authorization = 'Bearer ' + token;
@@ -189,19 +245,23 @@ function deleteEnv(id)
     });
 }
 
-function saveEnvModalView(id) {
+
+
+function EditEnvModelView(id) {
     //var localData = getStickyData();
     
-    var data= {} ;  
-    data.userID = sessionStorage.getItem(loggedUser);
-    data.Notes= $("#env-add-text").val();
+    var header = {};
 
-    var token = sessionStorage.getItem(tokenKey);
+    var usr = window.localStorage.getItem(USERDATA);
+    var token = window.localStorage.getItem(TOKENKEY);
 
+    header.Notes = $("#env-add-text").val();
+    header.UserID = usr;
     if (token) {
-        data.Authorization = 'Bearer ' + token;
+        header.Authorization = 'Bearer ' + token;
     }
     else {
+        alert("User not logged");
         return; //Not logged. will it send to server later...
     }
 
@@ -209,7 +269,7 @@ function saveEnvModalView(id) {
         method: "PUT",
         contentType: 'application/json',
         url: serviceurl + "notesdatas/" + id,   //noteid
-        data: JSON2.stringify(data),   //array to JSON
+        data: JSON2.stringify(header),   //array to JSON
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
         },
@@ -219,24 +279,27 @@ function saveEnvModalView(id) {
     });
 
    
-    localData.GetNotesResult.push(data);
+    //localData.GetNotesResult.push(data);
     //window.localStorage[STICKYDATA] = JSON.stringify(data);
-    $("#envListView").data("kendoMobileListView").dataSource.read();
-    $("#env-add-modalview").kendoMobileModalView("close");
+    //$("#envListView").data("kendoMobileListView").dataSource.read();
+    //$("#env-add-modalview").kendoMobileModalView("close");
 }
 
-function Addenv() {
-    var data = {};
-    data.userID = sessionStorage.getItem(loggedUser);
-    data.GuidID = NewGuid();
-    data.Notes = ("#env-add-text").val();
+function saveEnvModelView() {
+    var header = {};
 
-    var token = sessionStorage.getItem(tokenKey);
+    var usr = window.localStorage.getItem(USERDATA);
+    var token = window.localStorage.getItem(TOKENKEY);
+
+    header.GuidID = NewGuid();
+    header.Notes = ("#env-add-text").val();
+    header.UserID = usr;
 
     if (token) {
-        data.Authorization = 'Bearer ' + token;
+        header.Authorization = 'Bearer ' + token;
     }
     else {
+        alert("User Not logged");
         return; //Not logged. will it send to server later...
     }
 
@@ -244,7 +307,7 @@ function Addenv() {
         method: "POST",
         contentType: 'application/json',
         url: serviceurl + "notesdatas" ,   //noteid
-        data: JSON2.stringify(data),   //array to JSON
+        data: JSON2.stringify(header),   //array to JSON
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
         },
@@ -260,6 +323,7 @@ function Addenv() {
     $("#env-add-modalview").kendoMobileModalView("close");
 
 }
+
 function envViewInit(e){
 
     e.view.element.find("#envListView").kendoMobileListView({
@@ -285,6 +349,29 @@ function envNavigate(e) {
 function swipe(e) {
     var button = kendo.fx($(e.touch.currentTarget).find("[data-role=button]"));
     button.expand().duration(30).play();
+}
+
+function showError(jqXHR) {
+
+    self.result(jqXHR.status + ': ' + jqXHR.statusText);
+
+    var response = jqXHR.responseJSON;
+    if (response) {
+        if (response.Message) self.errors.push(response.Message);
+        if (response.ModelState) {
+            var modelState = response.ModelState;
+            for (var prop in modelState) {
+                if (modelState.hasOwnProperty(prop)) {
+                    var msgArr = modelState[prop]; // expect array here
+                    if (msgArr.length) {
+                        for (var i = 0; i < msgArr.length; ++i) self.errors.push(msgArr[i]);
+                    }
+                }
+            }
+        }
+        if (response.error) self.errors.push(response.error);
+        if (response.error_description) self.errors.push(response.error_description);
+    }
 }
 
 function touchstart(e) {
@@ -339,6 +426,7 @@ function envDetailInit(e) {
         view.element.find("#env-edit-text").val(view.element.find("#env-edit-text").data("kendoEditor").value());
         for(var i=0; i<dataSource.data().length; i++) {
             if (dataSource.data()[i].GuidID == view.element.find("#env-edit-id").val()) {
+                EditEnvModelView(view.element.find("#env-edit-id").val());
                 dataSource.data()[i].Notes = view.element.find("#env-edit-text").data("kendoEditor").value();
                 dataSource.data()[i].dirty = true;
             }
