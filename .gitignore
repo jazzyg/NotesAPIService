@@ -240,3 +240,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+.idea/
+.DS_Store
+NotesAPIService.iml
