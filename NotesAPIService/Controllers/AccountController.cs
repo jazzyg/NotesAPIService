@@ -16,6 +16,7 @@ using Microsoft.Owin.Security.OAuth;
 using NotesAPIService.Models;
 using NotesAPIService.Providers;
 using NotesAPIService.Results;
+using Newtonsoft.Json.Linq;
 
 namespace NotesAPIService.Controllers
 {
@@ -226,6 +227,7 @@ namespace NotesAPIService.Controllers
         [OverrideAuthentication]
         [HostAuthentication(DefaultAuthenticationTypes.ExternalCookie)]
         [AllowAnonymous]
+        [HttpGet]
         [Route("ExternalLogin", Name = "ExternalLogin")]
         public async Task<IHttpActionResult> GetExternalLogin(string provider, string error = null)
         {
@@ -374,6 +376,7 @@ namespace NotesAPIService.Controllers
             }
             return Ok();
         }
+
 
         protected override void Dispose(bool disposing)
         {
