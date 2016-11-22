@@ -7,6 +7,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesAPIService", "NotesAPI
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesServiceWindowsClient", "NotesServiceWindowsClient\NotesServiceWindowsClient.csproj", "{079B41B3-4302-407D-BCB3-56B136C65F87}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "www", "UI\www\", "{3A0CDB57-B031-4654-B56A-3BB40781F3EF}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_16855"
+		Debug.AspNetCompiler.PhysicalPath = "UI\www\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_16855\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_16855"
+		Release.AspNetCompiler.PhysicalPath = "UI\www\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_16855\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "16855"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +41,10 @@ Global
 		{079B41B3-4302-407D-BCB3-56B136C65F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{079B41B3-4302-407D-BCB3-56B136C65F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{079B41B3-4302-407D-BCB3-56B136C65F87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

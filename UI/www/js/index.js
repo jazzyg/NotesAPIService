@@ -40,10 +40,12 @@ function  openWindow(url) {
 }
 
 function NewGuid() {
-return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
+    //guid generated at server side
+    return '00000000-0000-0000-0000-000000000000';
+//return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+//        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+//        return v.toString(16);
+//    });
 }
 
 function getStickyData()
@@ -64,24 +66,40 @@ function closeModalViewLogin() {
     $("#modalview-login").kendoMobileModalView("close");
     $("#modalview-register").kendoMobileModalView("close");
 }
+function OnModalViewRegister() {
+    $("#modalview-login").kendoMobileModalView("close");
+    $("#modalview-register").kendoMobileModalView("close");
+    appregister;
+}
 function closeModalViewRegister() {
     $("#modalview-login").kendoMobileModalView("close");
     $("#modalview-register").kendoMobileModalView("close");
 }
 
-function openModalViewLogin()
+function OnModalViewLogin()
 {
     $("#modalview-register").kendoMobileModalView("close");
     $("#modalview-login").kendoMobileModalView("open");
+    applogin;
 }
 
 function syncStickyData()
 {
+    var serviceurl = "https://notesapiservice.azurewebsites.net/api";
+    var jsondata = {};
+    var token = sessionStorage.getItem(tokenKey);
+
+    if (token) {
+        headers.Authorization = 'Bearer ' + token;
+    }
+
     $.ajax
     ({
         type: "GET",
-        url: "http://syncnotesservice.azurewebsites.net/notesservice.svc/GetNotes/test11@test.com",
+        contentType: 'application/json',
+        url: serviceurl + 'notesdatas/' + 'test45@test.com',
         async: false,
+        data:headers,
         beforeSend: function (xhr) {
             // if (request.pass != '') {
             //     console.log('beforeSend Build Details');
@@ -156,7 +174,6 @@ function saveEnvModalView() {
 }
 
 function envViewInit(e){
-
 
     e.view.element.find("#envListView").kendoMobileListView({
         dataSource: stickyDataSource,
