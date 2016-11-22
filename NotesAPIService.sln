@@ -25,6 +25,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "www", "UI\www\", "{3A0CDB57
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "16855"
+		SlnRelativePath = "UI\www\"
 	EndProjectSection
 EndProject
 Global

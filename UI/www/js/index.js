@@ -20,6 +20,7 @@ var app;
 var localDebug = true;
 var CREDENTIALS = "credentials";
 var STICKYDATA = "sticky";
+var serviceurl = "https://notesapiservice.azurewebsites.net/api";
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -85,19 +86,24 @@ function OnModalViewLogin()
 
 function syncStickyData()
 {
-    var serviceurl = "https://notesapiservice.azurewebsites.net/api";
+    
     var jsondata = {};
     var token = sessionStorage.getItem(tokenKey);
+    var usr = sessionStorage.getItem(loggedUser)
 
     if (token) {
         headers.Authorization = 'Bearer ' + token;
+    }
+    else {
+        //not logged...get local data or login screen
+        return;
     }
 
     $.ajax
     ({
         type: "GET",
         contentType: 'application/json',
-        url: serviceurl + 'notesdatas/' + 'test45@test.com',
+        url: serviceurl + 'notesdatas/' + usr,
         async: false,
         data:headers,
         beforeSend: function (xhr) {
@@ -142,37 +148,118 @@ function logout()
     window.localStorage[STICKYDATA] = JSON.stringify(localData);
     window.localStorage[CREDENTIALS] = JSON.stringify(localData);
     kendo.mobile.application.navigate("index");
+    applogout;
 }
 
 function deleteEnv(id)
 {
     var localData = getStickyData();
+    var usr = sessionStorage.getItem(loggedUser);
 
     for(var i=0; i<localData.GetNotesResult.length; i++){
         if(localData.GetNotesResult[i].GuidID === id){
-            localData.GetNotesResult.splice(i,1);
+            localData.GetNotesResult.splice(i, 1);
+            usr = localData.GetNotesResult[i].userId;
+
             break;
         }
     }
-    window.localStorage[STICKYDATA] = JSON.stringify(localData);
+    
+    var data = {};
+    var token = sessionStorage.getItem(tokenKey);
+
+    if (token) {
+        headers.Authorization = 'Bearer ' + token;
+    }
+    else {
+        return; //not logged, only local removed, if possible add a message for user to delete proceed in local, will it send to server?
+    }
+
+    $.ajax({
+        method: "DELETE",
+        contentType: 'application/json',
+        url: serviceurl + "notesdatas/" + usr + "/" + id,
+        data: headers,
+        success: function (result) {
+            window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus + "Error: " + errorThrown);
+        }
+    });
 }
 
-function saveEnvModalView() {
-    var localData = getStickyData();
-    var options = {
-        data: {
-            "GuidID": NewGuid(),
-            "Notes": $("#env-add-text").val(),
-            "UpdateDate":new Date()
-        }
-    };
+function saveEnvModalView(id) {
+    //var localData = getStickyData();
+    
+    var data= {} ;  
+    data.userID = sessionStorage.getItem(loggedUser);
+    data.Notes= $("#env-add-text").val();
 
-    localData.GetNotesResult.push(options.data);
-    window.localStorage[STICKYDATA] = JSON.stringify(localData);
+    var token = sessionStorage.getItem(tokenKey);
+
+    if (token) {
+        data.Authorization = 'Bearer ' + token;
+    }
+    else {
+        return; //Not logged. will it send to server later...
+    }
+
+    $.ajax({
+        method: "PUT",
+        contentType: 'application/json',
+        url: serviceurl + "notesdatas/" + id,   //noteid
+        data: JSON2.stringify(data),   //array to JSON
+        success: function (result) {
+            window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus + "Error: " + errorThrown);
+        }
+    });
+
+   
+    localData.GetNotesResult.push(data);
+    //window.localStorage[STICKYDATA] = JSON.stringify(data);
     $("#envListView").data("kendoMobileListView").dataSource.read();
     $("#env-add-modalview").kendoMobileModalView("close");
 }
 
+function Addenv() {
+    var data = {};
+    data.userID = sessionStorage.getItem(loggedUser);
+    data.GuidID = NewGuid();
+    data.Notes = ("#env-add-text").val();
+
+    var token = sessionStorage.getItem(tokenKey);
+
+    if (token) {
+        data.Authorization = 'Bearer ' + token;
+    }
+    else {
+        return; //Not logged. will it send to server later...
+    }
+
+    $.ajax({
+        method: "POST",
+        contentType: 'application/json',
+        url: serviceurl + "notesdatas" ,   //noteid
+        data: JSON2.stringify(data),   //array to JSON
+        success: function (result) {
+            window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus + "Error: " + errorThrown);
+        }
+    });
+
+
+    localData.GetNotesResult.push(data);
+    //window.localStorage[STICKYDATA] = JSON.stringify(data);
+    $("#envListView").data("kendoMobileListView").dataSource.read();
+    $("#env-add-modalview").kendoMobileModalView("close");
+
+}
 function envViewInit(e){
 
     e.view.element.find("#envListView").kendoMobileListView({

@@ -5,14 +5,14 @@
     var tokenKey = 'accessToken';
 
     self.result = ko.observable();
-    self.user = ko.observable();
+    //self.user = ko.observable();
 
-    self.registerEmail = ko.observable();
-    self.registerPassword = ko.observable();
-    self.registerPassword2 = ko.observable();
+    self.register-email = ko.observable();
+    self.register-password = ko.observable();
+    self.register-password2 = ko.observable();
 
-    self.loginEmail = ko.observable();
-    self.loginPassword = ko.observable();
+    //self.login-email = ko.observable();
+    //self.login-password = ko.observable();
     self.errors = ko.observableArray([]);
 
     function showError(jqXHR) {
@@ -84,8 +84,9 @@
 
         var loginData = {
             grant_type: 'password',
-            username: self.loginEmail(),
-            password: self.loginPassword()
+            username: self.register-email(),
+            password: self.register-password(),
+            
         };
 
         $.ajax({
@@ -94,10 +95,12 @@
             data: loginData
         }).done(function (data) {
             self.user(data.userName);
-                // Cache the access token in session storage.
-                sessionStorage.setItem(tokenKey, data.access_token);
-                self.result("Logged!");
-                closeModalViewLogin();
+            // Cache the access token in session storage.
+            sessionStorage.setItem(tokenKey, data.access_token);
+            sessionStorage.setItem(loggedUser, data.userName);
+
+            self.result("Logged!");
+            closeModalViewLogin();
 
         }).fail(showError);
     }
@@ -140,7 +143,8 @@
             // Successfully logged out. Delete the token.
             self.user('');
             sessionStorage.removeItem(tokenKey);
-            self.result("Logged!");
+            sessionStorage.removeItem(sessionStorage.getItem(loggedUser));
+            self.result("Logged off!");
         }).fail(showError);
     }
 }
