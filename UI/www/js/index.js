@@ -491,6 +491,10 @@ var stickyDataSource = new kendo.data.DataSource({
         },
         read: function(options){
             var localData = getStickyData();
+	    if(localData == null)
+	    {
+		localData = [];
+	    }
             options.success(localData);
         },
         change: function (e) {
