@@ -22,6 +22,7 @@ var CREDENTIALS = "credentials";
 var STICKYDATA = "sticky";
 var USERDATA = "user";
 var TOKENKEY = "token";
+var offline = false;
 
 var serviceurl = "https://notesapiservice.azurewebsites.net";
 
@@ -31,7 +32,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady() {
     kendo.mobile.ui.Drawer.current = null;
     app = new kendo.mobile.Application($(document.body), {skin: 'nova'});
-    getStickyData();
+    syncStickyData();
 }
 
 function  openWindow(url) {
@@ -50,9 +51,19 @@ function NewGuid() {
     });
 }
 
-function getStickyData()
+function getLocalStickyData()
 {
-    syncStickyData();
+    return jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
+}
+
+function getStickyData() {
+    if (!offline) {
+        console.log('Get Online Data.');
+        syncStickyData();
+    }
+    else {
+        console.log('Get Offline Data.');
+    }
     return jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
 }
 
@@ -208,24 +219,29 @@ function logout()
 function deleteEnv(id)
 {
     var header = {};
+    debugger;
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
 
-    var localData = getStickyData();
+    var localData = getLocalStickyData();
  
     for(var i=0; i<localData.length; i++){
         if(localData[i].guidID === id){
             localData.splice(i, 1);
-            usr = localData[i].userId;
-
+            window.localStorage.setItem(STICKYDATA, JSON.stringify(localData));
+            console.log('Delete Local. Set offline.');
+            offline = true;
+            $("#envListView").data("kendoMobileListView").dataSource.read();
             break;
         }
     }
+
+
     header.guidID = id;
     header.userID = usr;
 
     if (token) {
-        headers.Authorization = 'Bearer ' + token;
+        header.Authorization = 'Bearer ' + token;
     }
     else {
         return; //not logged, only local removed, if possible add a message for user to delete proceed in local, will it send to server?
@@ -237,7 +253,9 @@ function deleteEnv(id)
         url: serviceurl + "/api/notesdatas/" + usr + "/" + id,
         data: header,
         success: function (result) {
-            window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+            console.log('Deleted on Server. Set online.');
+            offline = false;
+            $("#envListView").data("kendoMobileListView").dataSource.read();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             alert(textStatus + "Error: " + errorThrown);
@@ -247,14 +265,12 @@ function deleteEnv(id)
 
 
 
-function EditEnvModelView(id) {
-    //var localData = getStickyData();
+function UpdateEnvModelView(id, notes) {
     var header = {};
 
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
-
-    header.notes = $("#env-add-text").val();
+    header.notes = notes;
     header.guidid = id;
     header.userID = usr;
 
@@ -272,7 +288,9 @@ function EditEnvModelView(id) {
         url: serviceurl + "/api/notesdatas/" + usr,   //userid
         data: JSON.stringify(header),   //array to JSON
         success: function (result) {
-            window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+            console.log('Update to Server Successful. Set online.');
+            offline = false;
+            $("#envListView").data("kendoMobileListView").dataSource.read();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             alert(textStatus + "Error: " + errorThrown);
@@ -311,7 +329,7 @@ function saveEnvModalView() {
         url: serviceurl + "/api/notesdatas" ,   //no query string needed
         data: JSON.stringify(header),   //array to JSON
         success: function (result) {
-            window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+            syncStickyData();
         },
         error: function (XMLHttpRequest, textStatus, errorThrown) {
             alert(textStatus + "Error: " + errorThrown);
@@ -432,9 +450,11 @@ function envDetailInit(e) {
         view.element.find("#env-edit-text").val(view.element.find("#env-edit-text").data("kendoEditor").value());
         for(var i=0; i<dataSource.data().length; i++) {
             if (dataSource.data()[i].guidID == view.element.find("#env-edit-id").val()) {
-                EditEnvModelView(view.element.find("#env-edit-id").val());
                 dataSource.data()[i].notes = view.element.find("#env-edit-text").data("kendoEditor").value();
                 dataSource.data()[i].dirty = true;
+                console.log('Update to Local. Set offline.');
+                offline = true;
+                UpdateEnvModelView(view.element.find("#env-edit-id").val(), view.element.find("#env-edit-text").val());
             }
         }
         dataSource.one("change", function() {
