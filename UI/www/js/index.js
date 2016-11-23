@@ -23,7 +23,7 @@ var STICKYDATA = "sticky";
 var USERDATA = "user";
 var TOKENKEY = "token";
 
-var serviceurl = "https://notesapiservice.azurewebsites.net/api";
+var serviceurl = "https://notesapiservice.azurewebsites.net";
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -72,7 +72,7 @@ function OnModalViewRegister() {
 
     $.ajax({
         type: 'POST',
-        url: webapiserviceUrl + '/api/Account/Register',
+        url: serviceurl + '/api/Account/Register',
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(data)
     }).done(function (data) {
@@ -101,64 +101,64 @@ function OnModalViewLogin()
     };
     $.ajax({
         type: 'POST',
-        url: webapiserviceUrl + '/Token',
+        url: serviceurl + '/Token',
         data: loginData
     }).done(function (data) {
         // Cache the access token in session storage.
+        debugger;
         window.localStorage.setItem(USERDATA, data.userName);
         window.localStorage.setItem(TOKENKEY, data.access_token);
         $("#modalview-register").kendoMobileModalView("close");
-        $("#modalview-login").kendoMobileModalView("open");
-
+        $("#modalview-login").kendoMobileModalView("close");
+        $("#envListView").data("kendoMobileListView").dataSource.read();
     }).fail(showError);
 }
 
-function syncStickyData()
-{
-    
+function syncStickyData() {
+
     var jsondata = {};
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
-  
+
     if (token) {
-        headers.Authorization = 'Bearer ' + token;
+
+        $.ajax
+        ({
+            type: "GET",
+            contentType: 'application/json',
+            url: serviceurl + '/api/notesdatas/' + usr,
+            async: false,
+            //data:headers,
+            beforeSend: function (xhr) {
+                // if (request.pass != '') {
+                //     console.log('beforeSend Build Details');
+                //     var username = request.user;
+                //     var password = request.pass;
+                //     console.log(btoa(username + ":" + password))
+                //     xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
+                xhr.setRequestHeader("Authorization", 'Bearer ' + token);
+                // }
+            },
+            timeout: 3000, // sets timeout to 3 seconds
+            success: function (result) {
+                window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+                var localStickyData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
+                if (localStickyData == null) {
+                    localStickyData = [];
+
+                    window.localStorage.setItem(STICKYDATA, JSON.stringify(localStickyData));
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(textStatus + "Error: " + errorThrown);
+            }
+        });
     }
     else {
         //not logged...get local data or login screen
         return;
     }
 
-    $.ajax
-    ({
-        type: "GET",
-        contentType: 'application/json',
-        url: serviceurl + 'notesdatas/' + usr,
-        async: false,
-        //data:headers,
-        beforeSend: function (xhr) {
-            // if (request.pass != '') {
-            //     console.log('beforeSend Build Details');
-            //     var username = request.user;
-            //     var password = request.pass;
-            //     console.log(btoa(username + ":" + password))
-            //     xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
-            xhr.setRequestHeader("Authorization", 'Bearer ' + token);
-            // }
-        },
-        timeout: 3000, // sets timeout to 3 seconds
-        success: function (result) {
-            window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
-            var localStickyData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
-            if (localStickyData == null) {
-                localStickyData = { "GetNotesResult": [] };
-
-                window.localStorage.setItem(STICKYDATA, JSON.stringify(localStickyData));
-            }
-        },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            alert(textStatus + "Error: " + errorThrown);
-        }
-    });
 }
 
 function getParameterByName(name) {
@@ -195,7 +195,7 @@ function logout()
 
         $.ajax({
             type: 'POST',
-            url: webapiserviceUrl + '/api/Account/Logout',
+            url: serviceurl + '/api/Account/Logout',
             headers: headers
         }).done(function (data) {
             // Successfully logged out. Delete the token.
@@ -213,10 +213,10 @@ function deleteEnv(id)
 
     var localData = getStickyData();
  
-    for(var i=0; i<localData.GetNotesResult.length; i++){
-        if(localData.GetNotesResult[i].GuidID === id){
-            localData.GetNotesResult.splice(i, 1);
-            usr = localData.GetNotesResult[i].userId;
+    for(var i=0; i<localData.length; i++){
+        if(localData[i].guidID === id){
+            localData.splice(i, 1);
+            usr = localData[i].userId;
 
             break;
         }
@@ -234,7 +234,7 @@ function deleteEnv(id)
     $.ajax({
         method: "DELETE",
         contentType: 'application/json',
-        url: serviceurl + "notesdatas/" + usr + "/" + id,
+        url: serviceurl + "/api/notesdatas/" + usr + "/" + id,
         data: headers,
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
@@ -249,14 +249,13 @@ function deleteEnv(id)
 
 function EditEnvModelView(id) {
     //var localData = getStickyData();
-
     var header = {};
 
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
 
-    header.Notes = $("#env-add-text").val();
-    header.UserID = usr;
+    header.notes = $("#env-add-text").val();
+    header.userID = usr;
     if (token) {
         header.Authorization = 'Bearer ' + token;
     }
@@ -268,8 +267,8 @@ function EditEnvModelView(id) {
     $.ajax({
         method: "PUT",
         contentType: 'application/json',
-        url: serviceurl + "notesdatas/" + id,   //noteid
-        data: JSON2.stringify(header),   //array to JSON
+        url: serviceurl + "/api/notesdatas/" + id,   //noteid
+        data: JSON.stringify(header),   //array to JSON
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
         },
@@ -279,21 +278,22 @@ function EditEnvModelView(id) {
     });
 
    
-    //localData.GetNotesResult.push(data);
+    //localData.push(data);
     //window.localStorage[STICKYDATA] = JSON.stringify(data);
     //$("#envListView").data("kendoMobileListView").dataSource.read();
     //$("#env-add-modalview").kendoMobileModalView("close");
 }
 
-function saveEnvModelView() {
+function saveEnvModalView() {
     var header = {};
+    debugger;
 
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
 
-    header.GuidID = NewGuid();
-    header.Notes = ("#env-add-text").val();
-    header.UserID = usr;
+    header.guidID = NewGuid();
+    header.notes = $("#env-add-text").val();
+    header.userID = usr;
 
     if (token) {
         header.Authorization = 'Bearer ' + token;
@@ -306,8 +306,8 @@ function saveEnvModelView() {
     $.ajax({
         method: "POST",
         contentType: 'application/json',
-        url: serviceurl + "notesdatas" ,   //noteid
-        data: JSON2.stringify(header),   //array to JSON
+        url: serviceurl + "/api/notesdatas" ,   //noteid
+        data: JSON.stringify(header),   //array to JSON
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
         },
@@ -316,8 +316,11 @@ function saveEnvModelView() {
         }
     });
 
+    var data = { guidID: header.guidID, userID: header.userID, notes: header.notes, createdate:  new Date(), updateDate:  new Date()};
+    var localData = JSON.parse(window.localStorage[STICKYDATA]);
+    localData.push(data);
+    window.localStorage[STICKYDATA] = JSON.stringify(localData);
 
-    localData.GetNotesResult.push(data);
     //window.localStorage[STICKYDATA] = JSON.stringify(data);
     $("#envListView").data("kendoMobileListView").dataSource.read();
     $("#env-add-modalview").kendoMobileModalView("close");
@@ -352,9 +355,9 @@ function swipe(e) {
 }
 
 function showError(jqXHR) {
-
-    self.result(jqXHR.status + ': ' + jqXHR.statusText);
-
+//    debugger;
+    alert(jqXHR.status + ': ' + jqXHR.statusText);
+    /*
     var response = jqXHR.responseJSON;
     if (response) {
         if (response.Message) self.errors.push(response.Message);
@@ -372,6 +375,7 @@ function showError(jqXHR) {
         if (response.error) self.errors.push(response.error);
         if (response.error_description) self.errors.push(response.error_description);
     }
+    */
 }
 
 function touchstart(e) {
@@ -425,9 +429,9 @@ function envDetailInit(e) {
     view.element.find("#done").data("kendoMobileButton").bind("click", function() {
         view.element.find("#env-edit-text").val(view.element.find("#env-edit-text").data("kendoEditor").value());
         for(var i=0; i<dataSource.data().length; i++) {
-            if (dataSource.data()[i].GuidID == view.element.find("#env-edit-id").val()) {
+            if (dataSource.data()[i].guidID == view.element.find("#env-edit-id").val()) {
                 EditEnvModelView(view.element.find("#env-edit-id").val());
-                dataSource.data()[i].Notes = view.element.find("#env-edit-text").data("kendoEditor").value();
+                dataSource.data()[i].notes = view.element.find("#env-edit-text").data("kendoEditor").value();
                 dataSource.data()[i].dirty = true;
             }
         }
@@ -459,7 +463,7 @@ var stickyDataSource = new kendo.data.DataSource({
     transport: {
         create: function(options){
             var localData = JSON.parse(window.localStorage[STICKYDATA]);
-            localData.GetNotesResult.push(options.data);
+            localData.push(options.data);
             window.localStorage[STICKYDATA] = JSON.stringify(localData);
             options.success(options.data);
         },
@@ -489,10 +493,10 @@ var stickyDataSource = new kendo.data.DataSource({
         update: function(options){
             var localData = JSON.parse(window.localStorage[STICKYDATA]);
 
-            for(var i=0; i<localData.GetNotesResult.length; i++){
-                if(localData.GetNotesResult[i].GuidID == options.data.GuidID){
-                    localData.GetNotesResult[i].Notes = options.data.Notes;
-                    localData.GetNotesResult[i].UpdateDate = new Date();
+            for(var i=0; i<localData.length; i++){
+                if(localData[i].guidID == options.data.guidID){
+                    localData[i].notes = options.data.notes;
+                    localData[i].updateDate = new Date();
                 }
             }
             window.localStorage[STICKYDATA] = JSON.stringify(localData);
@@ -500,9 +504,9 @@ var stickyDataSource = new kendo.data.DataSource({
         },
         destroy: function(options){
             var localData = JSON.parse(localStorage[STICKYDATA]);
-            for(var i=0; i<localData.GetNotesResult.length; i++){
-                if(localData.GetNotesResult[i].GuidID === options.data.GuidID){
-                    localData.GetNotesResult.splice(i,1);
+            for(var i=0; i<localData.length; i++){
+                if(localData[i].guidID === options.data.guidID){
+                    localData.splice(i,1);
                     break;
                 }
             }
@@ -511,13 +515,14 @@ var stickyDataSource = new kendo.data.DataSource({
         },
     },
     schema: {
-        data: "GetNotesResult",
         model: {
-            id: "GuidID",
+            id: "guidID",
             fields: {
-                GuidID: { editable: false, nullable: false, type: "string" },
-                Notes: { editable: true, nullable: false, type: "string" },
-                UpdateDate: { editable: true, nullable: false, type: "date" }
+                userID: { editable: false, nullable: false, type: "string" },
+                guidID: { editable: false, nullable: false, type: "string" },
+                notes: { editable: true, nullable: false, type: "string" },
+                createdate: { editable: true, nullable: false, type: "date" },
+                updateDate: { editable: true, nullable: false, type: "date" }
             }
         }
     }
