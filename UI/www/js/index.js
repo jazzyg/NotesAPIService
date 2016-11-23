@@ -351,6 +351,7 @@ function envViewInit(e){
 
     e.view.element.find("#envListView").kendoMobileListView({
         dataSource: stickyDataSource,
+        pullToRefresh: true,
         template: $("#environment-template").html()
     }).kendoTouch({
             filter: ">li",
