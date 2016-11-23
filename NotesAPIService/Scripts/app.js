@@ -407,7 +407,7 @@
             url: serviceurl + "/api/notesdatas",   //noteid
             data: JSON.stringify(header),   //array to JSON
             success: function (result) {
-                alert('Saved new note ' + JSON.stringify(result));
+                alert('saved new note: ' + JSON.stringify(result));
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert(textStatus + "Error: " + errorThrown);

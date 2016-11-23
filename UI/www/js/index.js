@@ -207,7 +207,7 @@ function logout()
 
 function deleteEnv(id)
 {
-
+    var header = {};
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
 
@@ -221,8 +221,8 @@ function deleteEnv(id)
             break;
         }
     }
-    
-    var data = {};
+    header.guidID = id;
+    header.userID = usr;
 
     if (token) {
         headers.Authorization = 'Bearer ' + token;
@@ -235,7 +235,7 @@ function deleteEnv(id)
         method: "DELETE",
         contentType: 'application/json',
         url: serviceurl + "/api/notesdatas/" + usr + "/" + id,
-        data: headers,
+        data: header,
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
         },
@@ -255,7 +255,9 @@ function EditEnvModelView(id) {
     var token = window.localStorage.getItem(TOKENKEY);
 
     header.notes = $("#env-add-text").val();
+    header.guidid = id;
     header.userID = usr;
+
     if (token) {
         header.Authorization = 'Bearer ' + token;
     }
@@ -267,7 +269,7 @@ function EditEnvModelView(id) {
     $.ajax({
         method: "PUT",
         contentType: 'application/json',
-        url: serviceurl + "/api/notesdatas/" + id,   //noteid
+        url: serviceurl + "/api/notesdatas/" + usr,   //userid
         data: JSON.stringify(header),   //array to JSON
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
@@ -306,7 +308,7 @@ function saveEnvModalView() {
     $.ajax({
         method: "POST",
         contentType: 'application/json',
-        url: serviceurl + "/api/notesdatas" ,   //noteid
+        url: serviceurl + "/api/notesdatas" ,   //no query string needed
         data: JSON.stringify(header),   //array to JSON
         success: function (result) {
             window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
