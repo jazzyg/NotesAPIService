@@ -318,11 +318,12 @@
         var usr = sessionStorage.getItem(USERDATA);
 
         var id = '1e3e6856-81a7-40cf-8ac8-a45929d0202d';
-        
-        var data = {};
+       
+        header.guidid = '121755ce-7b9d-4834-b6cb-06241bcb19bd';
+        header.userID = usr;
 
         if (token) {
-            headers.Authorization = 'Bearer ' + token;
+            header.Authorization = 'Bearer ' + token;
         }
         else {
             return; //not logged, only local removed, if possible add a message for user to delete proceed in local, will it send to server?
@@ -331,7 +332,7 @@
             method: "DELETE",
             contentType: 'application/json',
             url: serviceurl + "/api/notesdatas/" + usr + "/" + id,
-            data: headers,
+            data: header,
             success: function (result) {
                 alert('Deleted: ' + JSON.stringify(result));
             },
