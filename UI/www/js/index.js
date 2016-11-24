@@ -18,7 +18,6 @@
  */
 var app;
 var localDebug = true;
-var CREDENTIALS = "credentials";
 var STICKYDATA = "sticky";
 var USERDATA = "user";
 var TOKENKEY = "token";
@@ -74,7 +73,7 @@ function closeModalViewLogin() {
 
 function OnModalViewRegister() {
     $("#modalview-login").kendoMobileModalView("close");
-   
+
     var data = {
         Email: $('#register-email').val(),
         Password: $('#register-password').val(),
@@ -87,8 +86,11 @@ function OnModalViewRegister() {
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(data)
     }).done(function (data) {
+        login($('#register-email').val(), $('#register-password').val());
+        $('#register-email').val('');
+        $('#register-password').val('');
+        $('#register-password2').val('');
         $("#modalview-register").kendoMobileModalView("close");
-        alert("Registration complete!");
     }).fail(showError);
 }
 
@@ -104,11 +106,14 @@ function openModalViewLogin() {
 
 function OnModalViewLogin()
 {
-  
+    login($('#login-email').val(), $('#login-password').val());
+}
+
+function login(email, password) {
     var loginData = {
         grant_type: 'password',
-        username: $('#login-email').val(),
-        password: $('#login-password').val(),
+        username: email,
+        password: password,
     };
     $.ajax({
         type: 'POST',
@@ -116,9 +121,11 @@ function OnModalViewLogin()
         data: loginData
     }).done(function (data) {
         // Cache the access token in session storage.
-        debugger;
         window.localStorage.setItem(USERDATA, data.userName);
         window.localStorage.setItem(TOKENKEY, data.access_token);
+        $('#login-email').val('');
+        $('#login-password').val('');
+
         $("#modalview-register").kendoMobileModalView("close");
         $("#modalview-login").kendoMobileModalView("close");
         $("#envListView").data("kendoMobileListView").dataSource.read();
@@ -130,7 +137,10 @@ function syncStickyData() {
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
 
-    if (token) {
+    $("#logout-button").hide();
+    if (token != null) {
+        $("#login-modalview-open-button").hide();
+        $("#logout-button").show();
 
         $.ajax
         ({
@@ -175,17 +185,23 @@ function closePipelineModalView()
     $("#pipeline-add-modalview").kendoMobileModalView("close");
 }
 
-function closeEnvModalView() {
-    $("#pipeline-add-modalview").kendoMobileModalView("close");
+function closeNewEnvModalView() {
+    $("#env-add-modalview").kendoMobileModalView("close");
 }
 
-function logout()
+function OnModalViewLogout()
 {
     var localData = [];
     window.localStorage[STICKYDATA] = JSON.stringify(localData);
-    window.localStorage[CREDENTIALS] = JSON.stringify(localData);
-    kendo.mobile.application.navigate("index");
+    window.localStorage.removeItem(USERDATA);
+    window.localStorage.removeItem(TOKENKEY);
+    $("#login-modalview-open-button").show();
+    $("#logout-button").hide();
+    $("#envListView").data("kendoMobileListView").dataSource.read();
+    kendo.mobile.application.navigate("#");
 
+    /*
+    //logout-button
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
    
@@ -205,6 +221,7 @@ function logout()
             window.localStorage.setItem(TOKENKEY, '');
 
         }).fail(showError);
+     */
 }
 
 function deleteEnv(id)
@@ -360,6 +377,8 @@ function swipe(e) {
 }
 
 function showError(jqXHR) {
+    debugger;
+
     alert(jqXHR.status + ': ' + jqXHR.statusText);
     /*
     var response = jqXHR.responseJSON;

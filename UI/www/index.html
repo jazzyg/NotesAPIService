@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="css/index.css">
     <title></title>
 
+    <!--<meta http-equiv="Content-Security-Policy"
+          content="connect-src 'self' https://notesapiservice.azurewebsites.net;script-src 'self' 'unsafe-eval' 'unsafe-inline' https://notesapiservice.azurewebsites.net localhost;default-src 'self' gap://ready data: gap: https://ssl.gstatic.com 'unsafe-eval'; frame-src 'self' gap://ready https://notesapiservice.azurewebsites.net; style-src 'self' 'unsafe-inline'; media-src *">-->
 
     <link rel="stylesheet" href="css/kendo.common-nova.min.css" />
     <link rel="stylesheet" href="css/kendo.nova.min.css" />
@@ -43,7 +45,12 @@
 
     <ul data-role="listview">
         <li data-icon="favorites"><a href="#index" data-transition="none">Stickies</a></li>
-        <li data-icon="globe"><a data-rel="modalview" href="#modalview-login" id="modalview-open-button" data-transition="none">Login </a></li>
+        <li data-icon="globe" id="login-modalview-open-button">
+            <a data-rel="modalview" href="#modalview-login" data-transition="none">Login </a>
+        </li>
+        <li data-icon="globe" id="logout-button">
+            <a href="#" onclick="OnModalViewLogout();" data-transition="none">Logout</a>
+        </li>
     </ul>
 
     <!--<div data-role="footer">-->
@@ -109,7 +116,7 @@
     <div data-role="header">
         <div data-role="navbar">
             <span>Add New Sticky</span>
-            <a data-click="closeEnvModalView" data-role="button" data-align="right">Cancel</a>
+            <a data-click="closeNewEnvModalView" data-role="button" data-align="right">Cancel</a>
         </div>
     </div>
 
@@ -121,7 +128,7 @@
     <div data-role="footer">
         <div data-role="navbar">
             <a data-click="saveEnvModalView" id="modalview-save-button" type="button" data-role="button" data-align="right">Save</a>
-            <a data-click="closeEnvModalView" id="modalview-cancel-button" type="button" data-role="button" data-align="right">Cancel</a>
+            <a data-click="closeNewEnvModalView" id="modalview-cancel-button" type="button" data-role="button" data-align="right">Cancel</a>
         </div>
     </div>
 </div>
