@@ -204,3 +204,10 @@ h1 {
     border-color: #7ea700 !important;
     background-color: #7ea700 !important;
 }
+
+#log-out-button
+{
+    background: none !important;;
+    border: none !important;
+    text-align: left;
+}

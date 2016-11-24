@@ -31,14 +31,13 @@
     <ul id="envListView" class="main-menu"></ul>
 
     <script type="text/x-kendo-template" id="environment-template">
-        <a class="km-listview-link"> #=notes# </a>
+        <a class="km-listview-link"> #=title# </a>
     </script>
 </div>
 
 <div data-role="drawer" data-stretch="true" id="sidebar">
     <div data-role="header">
         <div data-role="navbar">
-            <img src="img/logo.png" data-align="left" id="logo">
             <span style="color:#fff">Network Stickies</span>
         </div>
     </div>
@@ -49,7 +48,7 @@
             <a data-rel="modalview" href="#modalview-login" data-transition="none">Login </a>
         </li>
         <li data-icon="globe" id="logout-button">
-            <a href="#" onclick="OnModalViewLogout();" data-transition="none">Logout</a>
+            <a id="log-out-button" class="km-listview-link" data-transition="none">Logout</a>
         </li>
     </ul>
 

@@ -191,6 +191,7 @@ function closeNewEnvModalView() {
 
 function OnModalViewLogout()
 {
+    debugger;
     var localData = [];
     window.localStorage[STICKYDATA] = JSON.stringify(localData);
     window.localStorage.removeItem(USERDATA);
@@ -362,6 +363,12 @@ function envViewInit(e){
             swipe: swipe
         });
 
+    $("#log-out-button").kendoButton({
+        click: function(e) {
+            OnModalViewLogout();
+        }
+    });
+
     $("#envListView").data("kendoMobileListView").dataSource.read();
 }
 
@@ -455,6 +462,8 @@ function envDetailInit(e) {
             if (dataSource.data()[i].guidID == view.element.find("#env-edit-id").val()) {
                 dataSource.data()[i].notes = view.element.find("#env-edit-text").data("kendoEditor").value();
                 dataSource.data()[i].dirty = true;
+                $("#env-edit-text").blur();
+                $("#envListView").focus();
                 console.log('Update to Local. Set offline.');
                 offline = true;
                 UpdateEnvModelView(view.element.find("#env-edit-id").val(), view.element.find("#env-edit-text").val());
@@ -551,6 +560,8 @@ var stickyDataSource = new kendo.data.DataSource({
                 userID: { editable: false, nullable: false, type: "string" },
                 guidID: { editable: false, nullable: false, type: "string" },
                 notes: { editable: true, nullable: false, type: "string" },
+                title: { editable: true, nullable: false, type: "string" },
+                syncstatus: { editable: true, nullable: false, type: "string" },
                 createdate: { editable: true, nullable: false, type: "date" },
                 updateDate: { editable: true, nullable: false, type: "date" }
             }
