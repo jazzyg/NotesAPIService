@@ -127,7 +127,6 @@ function OnModalViewLogin()
 
 function syncStickyData() {
 
-    var jsondata = {};
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
 
@@ -139,16 +138,8 @@ function syncStickyData() {
             contentType: 'application/json',
             url: serviceurl + '/api/notesdatas/' + usr,
             async: false,
-            //data:headers,
             beforeSend: function (xhr) {
-                // if (request.pass != '') {
-                //     console.log('beforeSend Build Details');
-                //     var username = request.user;
-                //     var password = request.pass;
-                //     console.log(btoa(username + ":" + password))
-                //     xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
                 xhr.setRequestHeader("Authorization", 'Bearer ' + token);
-                // }
             },
             timeout: 3000, // sets timeout to 3 seconds
             success: function (result) {
@@ -219,7 +210,6 @@ function logout()
 function deleteEnv(id)
 {
     var header = {};
-    debugger;
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
 
@@ -237,13 +227,7 @@ function deleteEnv(id)
     }
 
 
-    header.guidID = id;
-    header.userID = usr;
-
-    if (token) {
-        header.Authorization = 'Bearer ' + token;
-    }
-    else {
+    if (!token) {
         return; //not logged, only local removed, if possible add a message for user to delete proceed in local, will it send to server?
     }
 
@@ -251,7 +235,9 @@ function deleteEnv(id)
         method: "DELETE",
         contentType: 'application/json',
         url: serviceurl + "/api/notesdatas/" + usr + "/" + id,
-        data: header,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Authorization", 'Bearer ' + token);
+        },
         success: function (result) {
             console.log('Deleted on Server. Set online.');
             offline = false;
@@ -306,7 +292,6 @@ function UpdateEnvModelView(id, notes) {
 
 function saveEnvModalView() {
     var header = {};
-    debugger;
 
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
@@ -376,7 +361,6 @@ function swipe(e) {
 }
 
 function showError(jqXHR) {
-//    debugger;
     alert(jqXHR.status + ': ' + jqXHR.statusText);
     /*
     var response = jqXHR.responseJSON;
@@ -530,6 +514,7 @@ var stickyDataSource = new kendo.data.DataSource({
             options.success(options.data);
         },
         destroy: function(options){
+            console.log('deleting in datasource');
             var localData = JSON.parse(localStorage[STICKYDATA]);
             for(var i=0; i<localData.length; i++){
                 if(localData[i].guidID === options.data.guidID){
