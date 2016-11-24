@@ -584,6 +584,7 @@ var stickyDataSource = new kendo.data.DataSource({
             window.localStorage[STICKYDATA] = JSON.stringify(localData);
             options.success(options.data);
         },
+        /*
         destroy: function(options){
             console.log('deleting in datasource');
             var localData = JSON.parse(localStorage[STICKYDATA]);
@@ -596,6 +597,7 @@ var stickyDataSource = new kendo.data.DataSource({
             localStorage[STICKYDATA] = JSON.stringify(localData);
             options.success(localData);
         },
+        */
     },
     schema: {
         model: {
