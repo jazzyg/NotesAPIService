@@ -512,22 +512,6 @@ var stickyDataSource = new kendo.data.DataSource({
         change: function (e) {
             console.log('Changed');
         },
-        // read: {
-        //     url: "http://syncnotesservice.azurewebsites.net/notesservice.svc/GetNotes/test11@test.com",
-        //     dataType: "json",
-        //     cache: false,
-        //     type: 'GET',
-        //     beforeSend: function (xhr) {
-        //         // if (request.pass != '') {
-        //         //     console.log('beforeSend Jobs');
-        //         //     var username = request.user;
-        //         //     var password = request.pass;
-        //         //     console.log(btoa(username + ":" + password))
-        //         //     xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
-        //         //     xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-        //         // }
-        //     }
-        // },
         update: function(options){
             var localData = JSON.parse(window.localStorage[STICKYDATA]);
 
@@ -561,7 +545,7 @@ var stickyDataSource = new kendo.data.DataSource({
                 guidID: { editable: false, nullable: false, type: "string" },
                 notes: { editable: true, nullable: false, type: "string" },
                 title: { editable: true, nullable: false, type: "string" },
-                syncstatus: { editable: true, nullable: false, type: "string" },
+                syncstatus: { editable: true, nullable: false, type: "number" },
                 createdate: { editable: true, nullable: false, type: "date" },
                 updateDate: { editable: true, nullable: false, type: "date" }
             }
