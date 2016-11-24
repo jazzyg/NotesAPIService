@@ -22,12 +22,13 @@ var STICKYDATA = "sticky";
 var USERDATA = "user";
 var TOKENKEY = "token";
 var offline = false;
+var pendingDeletes = [];
+var pendingInserts = [];
 
 var serviceurl = "https://notesapiservice.azurewebsites.net";
 
 document.addEventListener("deviceready", onDeviceReady, false);
 
-// PhoneGap is ready
 function onDeviceReady() {
     kendo.mobile.ui.Drawer.current = null;
     app = new kendo.mobile.Application($(document.body), {skin: 'nova'});
@@ -91,7 +92,9 @@ function OnModalViewRegister() {
         $('#register-password').val('');
         $('#register-password2').val('');
         $("#modalview-register").kendoMobileModalView("close");
-    }).fail(showError);
+    }).fail(function (jqXHR){
+        console.log('Register Error' + jqXHR.status + ': ' + jqXHR.statusText);
+    });
 }
 
 function closeModalViewRegister() {
@@ -129,7 +132,9 @@ function login(email, password) {
         $("#modalview-register").kendoMobileModalView("close");
         $("#modalview-login").kendoMobileModalView("close");
         $("#envListView").data("kendoMobileListView").dataSource.read();
-    }).fail(showError);
+    }).fail(function (jqXHR){
+        console.log('Login Error' + jqXHR.status + ': ' + jqXHR.statusText);
+    });
 }
 
 function syncStickyData() {
@@ -157,30 +162,38 @@ function syncStickyData() {
                 var localStickyData = [];
                 var localData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
 
-                //if (result != null) {
-                //     if(localData == null || (localData!=null && localData.length==0))
-                //     {
-                //         localStickyData = result;
-                //     }
-                //     else {
-                //         for (var i = 0; i < result.length; i++) {
-                //             for (var i = 0; i < localData.length; i++) {
-                //                 if (localData[i].guidID == result[i].guidID) {
-                //                     if(localData[i].syncstatus==0)
-                //                     {
-                //                         localStickyData.push(result[i]);
-                //                         break;
-                //                     }
-                //                 }
-                //             }
-                //         }
-                //     }
-                // }
-                window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+                if (result != null) {
+                    debugger;
+                    if(localData == null || (localData!=null && localData.length==0))
+                    {
+                        localStickyData = result;
+                    }
+                    else {
+                        for (var i = 0; i < result.length; i++) {
+                            var noteFound = false;
+                            for (var j = 0; j < localData.length; j++) {
+                                if (localData[j].guidID == result[i].guidID) {
+                                    noteFound = true;
+                                    if(localData[j].syncstatus==0)
+                                    {
+                                        localStickyData.push(result[i]);
+                                        break;
+                                    }
+                                }
+                            }
+                            if(!noteFound)
+                            {
+                                localStickyData.push(result[i]);
+                            }
+                        }
+                    }
+                }
+                window.localStorage.setItem(STICKYDATA, JSON.stringify(localStickyData));
+                cleanUpPendingRequests();
 
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert(textStatus + "Error: " + errorThrown);
+                console.log(textStatus + "Error: " + errorThrown);
             }
         });
     }
@@ -188,7 +201,11 @@ function syncStickyData() {
         //not logged...get local data or login screen
         return;
     }
+}
 
+
+function cleanUpPendingRequests() {
+    console.log('cleanUpPendingRequests');
 }
 
 function getParameterByName(name) {
@@ -219,7 +236,7 @@ function OnModalViewLogout()
     $("#envListView").data("kendoMobileListView").dataSource.read();
     kendo.mobile.application.navigate("#");
 
-    /*
+
     //logout-button
     var usr = window.localStorage.getItem(USERDATA);
     var token = window.localStorage.getItem(TOKENKEY);
@@ -230,6 +247,7 @@ function OnModalViewLogout()
             headers.Authorization = 'Bearer ' + token;
         }
 
+        /*
         $.ajax({
             type: 'POST',
             url: serviceurl + '/api/Account/Logout',
@@ -239,8 +257,11 @@ function OnModalViewLogout()
             window.localStorage.setItem(USERDATA, '');
             window.localStorage.setItem(TOKENKEY, '');
 
-        }).fail(showError);
-     */
+        }).fail(function (jqXHR){
+            console.log('Logout Error' + jqXHR.status + ': ' + jqXHR.statusText);
+        });
+        */
+
 }
 
 function deleteEnv(id)
@@ -271,16 +292,22 @@ function deleteEnv(id)
         method: "DELETE",
         contentType: 'application/json',
         url: serviceurl + "/api/notesdatas/" + usr + "/" + id,
-        beforeSend: function (xhr) {
-            xhr.setRequestHeader("Authorization", 'Bearer ' + token);
+        guid: id,
+        beforeSend: function(jqXHR, settings) {
+            debugger;
+            jqXHR.setRequestHeader("Authorization", 'Bearer ' + token);
+            jqXHR.guidid = settings.guidid;
         },
         success: function (result) {
             console.log('Deleted on Server. Set online.');
             offline = false;
             $("#envListView").data("kendoMobileListView").dataSource.read();
         },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            alert(textStatus + "Error: " + errorThrown);
+        error: function (jqXHR, textStatus, errorThrown) {
+            debugger;
+            offline = false;
+            pendingDeletes.push(jqXHR.guidid);
+            console.log(textStatus + "Error: " + errorThrown);
         }
     });
 }
@@ -303,19 +330,24 @@ function UpdateEnvModelView(id, notes) {
         alert("User not logged");
         return; //Not logged. will it send to server later...
     }
-
+    debugger;
     $.ajax({
         method: "PUT",
         contentType: 'application/json',
         url: serviceurl + "/api/notesdatas/" + usr,   //userid
         data: JSON.stringify(header),   //array to JSON
+        beforeSend: function(jqXHR, settings) {
+            jqXHR.guidid = JSON.parse(settings.data).guidid;
+        },
         success: function (result) {
             console.log('Update to Server Successful. Set online.');
             offline = false;
             $("#envListView").data("kendoMobileListView").dataSource.read();
         },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            alert(textStatus + "Error: " + errorThrown);
+        error: function (jqXHR, textStatus, errorThrown) {
+            setDirty(jqXHR.guidid);
+            offline = false;
+            console.log(textStatus + "Error: " + errorThrown);
         }
     });
 
@@ -325,6 +357,22 @@ function UpdateEnvModelView(id, notes) {
     //$("#envListView").data("kendoMobileListView").dataSource.read();
     //$("#env-add-modalview").kendoMobileModalView("close");
 }
+
+
+function setDirty(guidid) {
+    var localData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
+
+    for (var j = 0; j < localData.length; j++) {
+        if (localData[j].guidID == guidid) {
+            debugger;
+            localData[j].syncstatus = 1;
+            break;
+        }
+    }
+    window.localStorage[STICKYDATA] = JSON.stringify(localData);
+
+}
+
 
 function saveEnvModalView() {
     var header = {};
@@ -349,11 +397,15 @@ function saveEnvModalView() {
         contentType: 'application/json',
         url: serviceurl + "/api/notesdatas" ,   //no query string needed
         data: JSON.stringify(header),   //array to JSON
+        beforeSend: function(jqXHR, settings) {
+            jqXHR.guidid = JSON.parse(settings.data).guidid;
+        },
         success: function (result) {
             syncStickyData();
         },
-        error: function (XMLHttpRequest, textStatus, errorThrown) {
-            alert(textStatus + "Error: " + errorThrown);
+        error: function (jqXHR, textStatus, errorThrown) {
+            pendingInserts.push(jqXHR.guidid);
+            console.log(textStatus + "Error: " + errorThrown);
         }
     });
 
@@ -399,31 +451,6 @@ function envNavigate(e) {
 function swipe(e) {
     var button = kendo.fx($(e.touch.currentTarget).find("[data-role=button]"));
     button.expand().duration(30).play();
-}
-
-function showError(jqXHR) {
-    debugger;
-
-    alert(jqXHR.status + ': ' + jqXHR.statusText);
-    /*
-    var response = jqXHR.responseJSON;
-    if (response) {
-        if (response.Message) self.errors.push(response.Message);
-        if (response.ModelState) {
-            var modelState = response.ModelState;
-            for (var prop in modelState) {
-                if (modelState.hasOwnProperty(prop)) {
-                    var msgArr = modelState[prop]; // expect array here
-                    if (msgArr.length) {
-                        for (var i = 0; i < msgArr.length; ++i) self.errors.push(msgArr[i]);
-                    }
-                }
-            }
-        }
-        if (response.error) self.errors.push(response.error);
-        if (response.error_description) self.errors.push(response.error_description);
-    }
-    */
 }
 
 function touchstart(e) {
@@ -483,6 +510,18 @@ function envDetailInit(e) {
                 $("#env-edit-text").blur();
                 $("#envListView").focus();
                 console.log('Update to Local. Set offline.');
+
+                var localData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
+
+                for (var j = 0; j < localData.length; j++) {
+                    if (localData[j].guidID == dataSource.data()[i].guidID) {
+                        debugger;
+                        localData[j].notes = dataSource.data()[i].notes;
+                        break;
+                    }
+                }
+                window.localStorage[STICKYDATA] = JSON.stringify(localData);
+
                 offline = true;
                 UpdateEnvModelView(view.element.find("#env-edit-id").val(), view.element.find("#env-edit-text").val());
             }

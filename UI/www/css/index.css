@@ -211,3 +211,13 @@ h1 {
     border: none !important;
     text-align: left;
 }
+
+.note-status-1
+{
+    color: Red;
+}
+
+.note-status-0
+ {
+     color: Black !important;
+ }
