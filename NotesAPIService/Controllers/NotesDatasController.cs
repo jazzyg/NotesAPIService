@@ -132,6 +132,16 @@ namespace NotesAPIService.Controllers
             Guid guidOutput;
             if (Guid.TryParse(notesData.GuidID.ToString(), out guidOutput) == true)
             {
+
+                //Check if latest Notes exists prior to updating the version
+                NotesData note = VerifyNotesTimestamp(notesData.GuidID);
+
+                if (note.UpdateDate > notesData.UpdateDate || notesData.UpdateDate == null)
+                {
+                    return BadRequest("update date mismatch");
+                }
+
+
                 notesData.UpdateDate = DateTime.Now;
                 db.Entry(notesData).State = EntityState.Modified;
             }
@@ -262,6 +272,10 @@ namespace NotesAPIService.Controllers
         private bool NotesDataExists(string id)
         {
             return db.NotesDatas.Count(e => e.UserID == id) > 0;
+        }
+        private NotesData VerifyNotesTimestamp(Guid noteid)
+        {
+            return db.NotesDatas.SingleOrDefault(m => m.GuidID == noteid);            
         }
     }
 

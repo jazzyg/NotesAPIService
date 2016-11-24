@@ -123,7 +123,7 @@ namespace NotesAPIService.Models
             }
         }
         [NotMapped]
-        public string syncstatus { get { return "0"; } }
+        public Int32 syncstatus { get { return 0; } }
     }
 
 }
