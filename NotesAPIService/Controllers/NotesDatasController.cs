@@ -8,6 +8,9 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using NotesAPIService.Models;
 using NotesAPIService.Filters;
+using HtmlAgilityPack;
+using System.IO;
+using System.Collections.Generic;
 
 namespace NotesAPIService.Controllers
 {
@@ -27,19 +30,25 @@ namespace NotesAPIService.Controllers
         }
 
         // GET: api/NotesDatas/test11@test.com       
-        public IQueryable<NotesData> GetNotesDatas(string id)
-        {
-            IQueryable<NotesData> results = db.NotesDatas.Where(x => x.UserID == id);
-            
-            return results;
-        
-        }
-
-        // GET: api/NotesDatas
-        //public IQueryable<NotesData> GetNotesDatas()
+        //public IQueryable<NotesData> GetNotesDatas(string id)
         //{
-        //    return db.NotesDatas;
+        //    IQueryable<NotesData> results = db.NotesDatas.Where(x => x.UserID == id);
+        //    return results;
         //}
+        public List<NotesData> GetNotesDatas(string id)
+        {
+            try
+            {
+                List<NotesData> list = db.NotesDatas.Where(x => x.UserID == id).ToList();
+
+                return list;
+            }
+            catch
+            {
+                return (new List<NotesData>());
+            }
+
+        }
 
         // GET: api/NotesData/5555-55555
         [Route("api/NotesData/{noteid}", Name = "NotesData")]
@@ -51,7 +60,7 @@ namespace NotesAPIService.Controllers
             try
             {
                 NotesData notesData = db.NotesDatas.SingleOrDefault(m => m.GuidID == new Guid(noteid));
-
+               
                 if (notesData == null)
                 {
                     return NotFound();
@@ -115,9 +124,9 @@ namespace NotesAPIService.Controllers
                 return BadRequest(ModelState);
             }
 
-            if ((id != notesData.UserID) || (notesData.GuidID == null))
+            if ((notesData.GuidID == null || notesData.GuidID == new Guid()))
             {
-                return BadRequest("Invalid key values");
+                return BadRequest("Invalid notes key values");
             }
 
             Guid guidOutput;
@@ -128,7 +137,7 @@ namespace NotesAPIService.Controllers
             }
             else
             {
-                return BadRequest("Invalid Note Id");
+                return BadRequest("Invalid Note key");
             }
 
             try
@@ -144,16 +153,18 @@ namespace NotesAPIService.Controllers
                 }
                 else
                 {
-                    throw;
+                    return BadRequest("Error in updating notes"); 
                 }
             }
-
+           
             return Content(HttpStatusCode.Created, notesData);
         }
 
         //Post - Create new note
         // POST: api/NotesDatas
-     //   [ValidateHttpAntiForgeryToken]
+        //   [ValidateHttpAntiForgeryToken]
+
+        [Route("api/NotesDatas")]
         [ResponseType(typeof(NotesData))]
         public IHttpActionResult PostNotesData(NotesData notesData)
         {
@@ -195,6 +206,7 @@ namespace NotesAPIService.Controllers
                 }
             }
 
+          
             return CreatedAtRoute("DefaultApi", new { id = notesData.UserID }, notesData);
         }
 
@@ -252,4 +264,6 @@ namespace NotesAPIService.Controllers
             return db.NotesDatas.Count(e => e.UserID == id) > 0;
         }
     }
+
+    
 }
