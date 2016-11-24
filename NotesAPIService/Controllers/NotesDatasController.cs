@@ -217,7 +217,8 @@ namespace NotesAPIService.Controllers
             }
 
           
-            return CreatedAtRoute("DefaultApi", new { id = notesData.UserID }, notesData);
+            return Content(HttpStatusCode.Created, notesData);
+            //CreatedAtRoute("DefaultApi", new { id = notesData.UserID }, notesData);
         }
 
         // DELETE: api/NotesDatas/userid/guid
