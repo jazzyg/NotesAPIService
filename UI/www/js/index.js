@@ -179,6 +179,10 @@ function syncStickyData() {
                                         localStickyData.push(result[i]);
                                         break;
                                     }
+                                    else
+                                    {
+                                        localStickyData.push(localData[j]);
+                                    }
                                 }
                             }
                             if(!noteFound)
@@ -206,6 +210,7 @@ function syncStickyData() {
 
 function cleanUpPendingRequests() {
     console.log('cleanUpPendingRequests');
+
 }
 
 function getParameterByName(name) {
@@ -226,7 +231,6 @@ function closeNewEnvModalView() {
 
 function OnModalViewLogout()
 {
-    debugger;
     var localData = [];
     window.localStorage[STICKYDATA] = JSON.stringify(localData);
     window.localStorage.removeItem(USERDATA);
@@ -292,11 +296,9 @@ function deleteEnv(id)
         method: "DELETE",
         contentType: 'application/json',
         url: serviceurl + "/api/notesdatas/" + usr + "/" + id,
-        guid: id,
-        beforeSend: function(jqXHR, settings) {
-            debugger;
-            jqXHR.setRequestHeader("Authorization", 'Bearer ' + token);
-            jqXHR.guidid = settings.guidid;
+        beforeSend: function (xhr, settings) {
+            xhr.setRequestHeader("Authorization", 'Bearer ' + token);
+            xhr.guidid = settings.guidid;
         },
         success: function (result) {
             console.log('Deleted on Server. Set online.');
@@ -304,12 +306,12 @@ function deleteEnv(id)
             $("#envListView").data("kendoMobileListView").dataSource.read();
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            debugger;
             offline = false;
             pendingDeletes.push(jqXHR.guidid);
             console.log(textStatus + "Error: " + errorThrown);
         }
     });
+
 }
 
 
@@ -330,7 +332,6 @@ function UpdateEnvModelView(id, notes) {
         alert("User not logged");
         return; //Not logged. will it send to server later...
     }
-    debugger;
     $.ajax({
         method: "PUT",
         contentType: 'application/json',
@@ -340,14 +341,16 @@ function UpdateEnvModelView(id, notes) {
             jqXHR.guidid = JSON.parse(settings.data).guidid;
         },
         success: function (result) {
+            setStatus(result.guidID, 0);
             console.log('Update to Server Successful. Set online.');
             offline = false;
             $("#envListView").data("kendoMobileListView").dataSource.read();
         },
         error: function (jqXHR, textStatus, errorThrown) {
-            setDirty(jqXHR.guidid);
+            setStatus(jqXHR.guidid, 1);
             offline = false;
             console.log(textStatus + "Error: " + errorThrown);
+            $("#envListView").data("kendoMobileListView").dataSource.read();
         }
     });
 
@@ -359,13 +362,12 @@ function UpdateEnvModelView(id, notes) {
 }
 
 
-function setDirty(guidid) {
+function setStatus(guidid, status) {
     var localData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
 
     for (var j = 0; j < localData.length; j++) {
         if (localData[j].guidID == guidid) {
-            debugger;
-            localData[j].syncstatus = 1;
+            localData[j].syncstatus = status;
             break;
         }
     }
@@ -374,7 +376,7 @@ function setDirty(guidid) {
 }
 
 
-function saveEnvModalView() {
+function insertEnvModalView() {
     var header = {};
 
     var usr = window.localStorage.getItem(USERDATA);
@@ -391,7 +393,7 @@ function saveEnvModalView() {
         alert("User Not logged");
         return; //Not logged. will it send to server later...
     }
-
+    $("#env-add-text").val('');
     $.ajax({
         method: "POST",
         contentType: 'application/json',
@@ -417,6 +419,7 @@ function saveEnvModalView() {
     //window.localStorage[STICKYDATA] = JSON.stringify(data);
     $("#envListView").data("kendoMobileListView").dataSource.read();
     $("#env-add-modalview").kendoMobileModalView("close");
+    kendo.mobile.application.navigate("#");
 
 }
 
@@ -424,6 +427,7 @@ function envViewInit(e){
 
     e.view.element.find("#envListView").kendoMobileListView({
         dataSource: stickyDataSource,
+        pullToRefresh: true,
         template: $("#environment-template").html()
     }).kendoTouch({
             filter: ">li",
@@ -515,7 +519,6 @@ function envDetailInit(e) {
 
                 for (var j = 0; j < localData.length; j++) {
                     if (localData[j].guidID == dataSource.data()[i].guidID) {
-                        debugger;
                         localData[j].notes = dataSource.data()[i].notes;
                         break;
                     }
@@ -529,7 +532,7 @@ function envDetailInit(e) {
         dataSource.one("change", function() {
             view.loader.hide();
             dataSource.read();
-            kendo.mobile.application.navigate("#");
+            kendo.mobile.application.navigate("#index");
         });
 
         view.loader.show();
