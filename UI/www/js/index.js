@@ -534,7 +534,7 @@ var stickyDataSource = new kendo.data.DataSource({
             for(var i=0; i<localData.length; i++){
                 if(localData[i].guidID == options.data.guidID){
                     localData[i].notes = options.data.notes;
-                    localData[i].updateDate = new Date();
+//                    localData[i].updateDate = new Date();
                 }
             }
             window.localStorage[STICKYDATA] = JSON.stringify(localData);
