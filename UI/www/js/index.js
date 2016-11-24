@@ -153,13 +153,31 @@ function syncStickyData() {
             },
             timeout: 3000, // sets timeout to 3 seconds
             success: function (result) {
-                window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
-                var localStickyData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
-                if (localStickyData == null) {
-                    localStickyData = [];
 
-                    window.localStorage.setItem(STICKYDATA, JSON.stringify(localStickyData));
-                }
+                var localStickyData = [];
+                var localData = jQuery.parseJSON(window.localStorage.getItem(STICKYDATA));
+
+                //if (result != null) {
+                //     if(localData == null || (localData!=null && localData.length==0))
+                //     {
+                //         localStickyData = result;
+                //     }
+                //     else {
+                //         for (var i = 0; i < result.length; i++) {
+                //             for (var i = 0; i < localData.length; i++) {
+                //                 if (localData[i].guidID == result[i].guidID) {
+                //                     if(localData[i].syncstatus==0)
+                //                     {
+                //                         localStickyData.push(result[i]);
+                //                         break;
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
+                window.localStorage.setItem(STICKYDATA, JSON.stringify(result));
+
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert(textStatus + "Error: " + errorThrown);
