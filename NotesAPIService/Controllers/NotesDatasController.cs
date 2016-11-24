@@ -134,12 +134,12 @@ namespace NotesAPIService.Controllers
             {
 
                 //Check if latest Notes exists prior to updating the version
-                NotesData note = VerifyNotesTimestamp(notesData.GuidID);
+                //NotesData note = VerifyNotesTimestamp(notesData.GuidID);
 
-                if (note.UpdateDate > notesData.UpdateDate || notesData.UpdateDate == null)
-                {
-                    return BadRequest("update date mismatch");
-                }
+                //if (note.UpdateDate > notesData.UpdateDate || notesData.UpdateDate == null)
+                //{
+                //    return BadRequest("update date mismatch");
+                //}
 
 
                 notesData.UpdateDate = DateTime.Now;
