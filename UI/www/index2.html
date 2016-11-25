@@ -19,18 +19,19 @@
 <body>
 
 
-<div data-role="view" data-title="Stickies" data-init="initGrid" id="index" data-stretch="true" data-layout="drawer-layout">
+<div data-role="view" data-title="Stickies" data-show="envViewInit" id="index" data-layout="drawer-layout">
     <header data-role="header">
         <div data-role="navbar">
             <a data-align="left" data-role="button" href="#sidebar" data-rel="drawer" data-icon="drawer-icon"></a>
             <span data-role="view-title"></span>
-            <input id="online"  data-align="right" type="checkbox" checked>
-            <!--<a class="km-primary right-button" data-align="right" data-role="button" data-rel="modalview" href="#env-add-modalview" data-icon="add" id="env-open-button">Add</a>-->
+            <a class="km-primary right-button" data-align="right" data-role="button" data-rel="modalview" href="#env-add-modalview" data-icon="add" id="env-open-button">Add</a>
         </div>
     </header>
     <div id="envGrid"></div>
-    <script type="text/x-kendo-template" id="stickyTemplate">
-        <textarea id="env-edit-text" data-role="editor" data-bind="value: notes" data-tools="[]" class="k-textbox" style="height: 200px;"></textarea>
+    <ul id="envListView" class="main-menu"></ul>
+
+    <script type="text/x-kendo-template" id="environment-template">
+        <a class="km-listview-link note-status-#: syncstatus#"> #=title# </a>
     </script>
 </div>
 
@@ -110,24 +111,48 @@
         </div>
     </header>
 </div>
+<div data-role="modalview" id="env-add-modalview" style="width: 90%;">
+    <div data-role="header">
+        <div data-role="navbar">
+            <span>Add New Sticky</span>
+            <a data-click="closeNewEnvModalView" data-role="button" data-align="right">Cancel</a>
+        </div>
+    </div>
 
-<style>
-    /* Grid columns with no width are collapsed if the space is not enough, thus min-width on the tables is needed */
-    .k-grid table
-    {
-        min-width: 600px;
-    }
+    <ul data-role="listview" data-style="inset">
+        <li>
+            <textarea id="env-add-text" data-bind="value: text" class="k-textbox" style="height: 200px;"></textarea>
+        </li>
+    </ul>
+    <div data-role="footer">
+        <div data-role="navbar">
+            <a data-click="insertEnvModalView" id="modalview-save-button" type="button" data-role="button" data-align="right">Save</a>
+            <a data-click="closeNewEnvModalView" id="modalview-cancel-button" type="button" data-role="button" data-align="right">Cancel</a>
+        </div>
+    </div>
+</div>
 
-    /* Android's default browser doesn't support properly min-width on tables */
-    @media screen and (max-width: 699px) {
-        .km-phone .km-android .k-grid table
-        {
-            width: 600px;
-        }
-    }
-</style>
+<div data-role="view" id="env-edit-detailview" data-show="envDetailShow" data-init="envDetailInit" data-title="Details">
+    <header data-role="header">
+        <div data-role="navbar">
+            <a class="nav-button" data-align="left" data-role="backbutton" id="envCancel">Cancel</a>
+            <span data-role="view-title"></span>
+            <a id="env-delete-button" data-align="right" data-role="button"  data-role="button" class="km-primary right-button" data-icon="trash">Delete</a>
+        </div>
+    </header>
+
+    <form>
+        <input id="env-edit-id" type="hidden" data-bind="value: id" />
+        <textarea id="env-edit-text" data-role="editor" data-bind="value: notes" data-tools="[]" class="k-textbox" style="height: 200px;"></textarea>
+    </form>
+
+    <Br />
+    <div class="action-buttons">
+        <a class="km-justified km-primary km-large" class="km-primary" data-role="button" id="done">Save</a>
+    </div>
+</div>
 
 <script type="text/javascript" src="cordova.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="js/index2.js"></script>
 </body>
 </html>
