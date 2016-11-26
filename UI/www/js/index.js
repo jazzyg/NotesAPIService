@@ -193,10 +193,9 @@ function checkOnlineStatus(dataSource) {
         // use an URL from the same domain to adhere to the same origin policy
         url: "https://api.github.com/users/google",
         dataType: "jsonp",
-        jsonpCallback: "logResults"
-    })
-        .done(function () {
-            // the ajax request succeeded - we are probably online.
+        timeout: 500,
+        jsonpCallback: "logResults",
+        success: function (data) {
             console.log("Online");
             if (!manualOffline) {
                 dataSource.online(true);
@@ -210,14 +209,17 @@ function checkOnlineStatus(dataSource) {
             else {
                 console.log("manual offline activated. Skip!");
             }
-        })
-        .fail(function () {
-            // the ajax request failed - we are probably offline.
-            console.log("Offline");
-            dataSource.online(false);
-            var switchInstance = $("#online").data("kendoMobileSwitch");
-            switchInstance.check(false);
-        });
+        },
+        error: function(x, t, m) {
+            if(t==="timeout") {
+                // the ajax request failed - we are probably offline.
+                console.log("Offline");
+                dataSource.online(false);
+                var switchInstance = $("#online").data("kendoMobileSwitch");
+                switchInstance.check(false);
+            }
+        }
+    });
 }
 
 
