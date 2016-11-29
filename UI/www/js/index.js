@@ -160,7 +160,7 @@ function initGrid() {
         columns: [
             {command: ["destroy"], title: "&nbsp;", width: "30px"},
             {field: "title", title: "Note"},
-            {field: "updateDate", title: "Updated", format: "{0:t}"}
+            {field: "updateDate", title: "Updated", format: "{0:t}", width: "100px"}
         ],
         editable: {
             mode:"popup",
