@@ -184,7 +184,7 @@ function initGrid() {
         checkLoginStatus();
         checkOnlineStatus(dataSource);
 
-    }, 5000);
+    }, 60000);  //60 secs
 
 }
 
@@ -275,6 +275,9 @@ function OnModalViewRegister() {
         $("#modalview-register").kendoMobileModalView("close");
     }).fail(function (jqXHR){
         console.log('Register Error' + jqXHR.status + ': ' + jqXHR.statusText);
+        var responseText = jQuery.parseJSON(jqXHR.responseText);
+        if (jqXHR.status = 400) alert("Request failed: " + responseText.message);
+       
     });
 }
 
@@ -317,6 +320,10 @@ function login(email, password) {
         checkLoginStatus();
     }).fail(function (jqXHR){
         console.log('Login Error' + jqXHR.status + ': ' + jqXHR.statusText);
+        var responseText = jQuery.parseJSON(jqXHR.responseText); 
+
+        if (jqXHR.status = 400) alert("Request failed: " + responseText.error_description);
+
     });
 }
 
