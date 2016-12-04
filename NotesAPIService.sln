@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesAPIService", "NotesAPIService\NotesAPIService.csproj", "{4B1DCC31-73C9-41FA-99DA-1072F41EE405}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesServiceWindowsClient", "NotesServiceWindowsClient\NotesServiceWindowsClient.csproj", "{079B41B3-4302-407D-BCB3-56B136C65F87}"
-EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "www", "UI\www\", "{3A0CDB57-B031-4654-B56A-3BB40781F3EF}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
@@ -28,6 +26,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "www", "UI\www\", "{3A0CDB57
 		SlnRelativePath = "UI\www\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotesServiceWindowsClient", "NotesServiceWindowsClient\NotesServiceWindowsClient.csproj", "{079B41B3-4302-407D-BCB3-56B136C65F87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,14 +38,14 @@ Global
 		{4B1DCC31-73C9-41FA-99DA-1072F41EE405}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B1DCC31-73C9-41FA-99DA-1072F41EE405}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B1DCC31-73C9-41FA-99DA-1072F41EE405}.Release|Any CPU.Build.0 = Release|Any CPU
-		{079B41B3-4302-407D-BCB3-56B136C65F87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{079B41B3-4302-407D-BCB3-56B136C65F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{079B41B3-4302-407D-BCB3-56B136C65F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{079B41B3-4302-407D-BCB3-56B136C65F87}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A0CDB57-B031-4654-B56A-3BB40781F3EF}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{079B41B3-4302-407D-BCB3-56B136C65F87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{079B41B3-4302-407D-BCB3-56B136C65F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{079B41B3-4302-407D-BCB3-56B136C65F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{079B41B3-4302-407D-BCB3-56B136C65F87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

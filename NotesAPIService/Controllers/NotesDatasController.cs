@@ -8,18 +8,29 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using NotesAPIService.Models;
 using NotesAPIService.Filters;
-using HtmlAgilityPack;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace NotesAPIService.Controllers
 {
     //simple repository class that stores items in a database, using Entity Framework.
+    [Authorize]
     public class NotesDatasController : ApiController
     {
-        private NotesAPIServiceContext db = new NotesAPIServiceContext();
+        //private NotesAPIServiceContext db = new NotesAPIServiceContext();
 
-        [Authorize]
+        private INotesRepository notesRepository;
+
+        public NotesDatasController()
+        {
+            this.notesRepository = new NotesRepository(new NotesAPIServiceContext());
+        }
+
+        public  NotesDatasController(INotesRepository notesRepository)
+        {
+            this.notesRepository = notesRepository;
+        }
+
         [Route("api/NotesDatas", Name = "NotesDatas")]
         [HttpGet]
         [ResponseType(typeof(string))]
@@ -29,17 +40,12 @@ namespace NotesAPIService.Controllers
             return String.Format("Hello, {0}.", userName);
         }
 
-        // GET: api/NotesDatas/test11@test.com       
-        //public IQueryable<NotesData> GetNotesDatas(string id)
-        //{
-        //    IQueryable<NotesData> results = db.NotesDatas.Where(x => x.UserID == id);
-        //    return results;
-        //}
+       
         public List<NotesData> GetNotesDatas(string id)
         {
             try
             {
-                List<NotesData> list = db.NotesDatas.Where(x => x.UserID == id).ToList();
+                List<NotesData> list = notesRepository.GetNotesDatas(id);
 
                 return list;
             }
@@ -47,7 +53,6 @@ namespace NotesAPIService.Controllers
             {
                 return (new List<NotesData>());
             }
-
         }
 
         // GET: api/NotesData/5555-55555
@@ -59,8 +64,8 @@ namespace NotesAPIService.Controllers
             //NotesData notesData = db.NotesDatas.Find(id); //find search only one key
             try
             {
-                NotesData notesData = db.NotesDatas.SingleOrDefault(m => m.GuidID == new Guid(noteid));
-               
+                NotesData notesData = notesRepository.GetNotesData(new Guid(noteid));
+
                 if (notesData == null)
                 {
                     return NotFound();
@@ -72,213 +77,118 @@ namespace NotesAPIService.Controllers
             {
                 return BadRequest("Multiple Record found for note id:" + noteid);
             }
+            catch (Exception)
+            {
+                return BadRequest("Not able to get data for: " + noteid);
+            }
         }
-
-        //[Route("api/NoteLastModified/{noteid}", Name = "NoteLastModified")]
-        //[HttpGet]
-        //[ResponseType(typeof(NotesData))]
-        //public IHttpActionResult NoteLastModified(string noteid)
-        //{
-        //    //NotesData notesData = db.NotesDatas.Find(id); //find search only one key
-        //    try
-        //    {
-        //        NotesData notesData = db.NotesDatas.SingleOrDefault(m => m.GuidID == new Guid(noteid));
-
-        //        if (notesData == null)
-        //        {
-        //            return NotFound();
-        //        }
-
-        //        return Ok(notesData.UpdateDate);
-        //    }
-        //    catch (InvalidOperationException)
-        //    {
-        //        return BadRequest("Multiple Record found for note id:" + noteid);
-        //    }
-        //}
-
-        //// GET: api/NotesDatas/test11@test.com/55555-5555
-        //[Route("api/NotesData/{id}/{noteid}", Name = "GetNotesDataUser")]
-        //[ResponseType(typeof(NotesData))]
-        //public IHttpActionResult GetNotesDataUser(string id, string noteid)
-        //{
-        //    NotesData notesData = db.NotesDatas.FirstOrDefault(x => x.UserID == id && x.GuidID == new Guid(noteid));
-
-        //    if (notesData == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(notesData);
-        //}
 
         // PUT - modify existing note. Only note data can be modified.
         // PUT: api/NotesDatas/5
-        // [ValidateHttpAntiForgeryToken]
-        
+        [ValidateHttpAntiForgeryToken]
+
         [ResponseType(typeof(void))]
         public IHttpActionResult PutNotesData(string id, NotesData notesData)
         {
+            NotesData retnotesData;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            if ((notesData.GuidID == null || notesData.GuidID == new Guid()))
-            {
-                return BadRequest("Invalid notes key values");
-            }
-
-            Guid guidOutput;
-            if (Guid.TryParse(notesData.GuidID.ToString(), out guidOutput) == true)
-            {
-
-                //Check if latest Notes exists prior to updating the version
-                //NotesData note = VerifyNotesTimestamp(notesData.GuidID);
-
-                //if (note.UpdateDate > notesData.UpdateDate || notesData.UpdateDate == null)
-                //{
-                //    return BadRequest("update date mismatch");
-                //}
-
-
-                notesData.UpdateDate = DateTime.Now;
-                db.Entry(notesData).State = EntityState.Modified;
-            }
-            else
-            {
-                return BadRequest("Invalid Note key");
-            }
-
             try
             {
-                db.SaveChanges();
+                retnotesData = notesRepository.PutNotesData(id, notesData);
+                
             }
 
-            catch (DbUpdateConcurrencyException)
+            catch (KeyNotFoundException)
             {
-                if (!NotesDataExists(id, notesData.GuidID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    return BadRequest("Error in updating notes"); 
-                }
+
+                return NotFound();
+
             }
-           
-            return Content(HttpStatusCode.Created, notesData);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Content(HttpStatusCode.Created, retnotesData);
         }
 
         //Post - Create new note
         // POST: api/NotesDatas
-        //   [ValidateHttpAntiForgeryToken]
+        [ValidateHttpAntiForgeryToken]
 
         [Route("api/NotesDatas")]
         [ResponseType(typeof(NotesData))]
+        //We are creating new note for userid. so no more data should be provided. 
         public IHttpActionResult PostNotesData(NotesData notesData)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            //We are creating new note for userid. so no mote data should be provided. 
-            if (string.IsNullOrEmpty(notesData.UserID))
-            {
-                return BadRequest("Invalid key values");
-            }
-
-            //if (!NotesDataExists(notesData.UserID))
-            //{
-            //    return BadRequest("User doesn't exists");
-            //}
-
-            if (notesData.GuidID == new Guid()) notesData.GuidID = Guid.NewGuid();
-            notesData.UpdateDate = DateTime.Now;
-            notesData.Createdate = DateTime.Now;
-
-            db.NotesDatas.Add(notesData);
-
+            NotesData retnotesData;
             try
             {
-                db.SaveChanges();
-            }
-            catch (DbUpdateException)
-            {
-                if (NotesDataExists(notesData.UserID, notesData.GuidID))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
 
-          
-            return Content(HttpStatusCode.Created, notesData);
+
+                retnotesData = notesRepository.PostNotesData(notesData);
+
+            }
+            catch (KeyNotFoundException) { return BadRequest("Invalid key values"); }
+            catch (DbUpdateException dux)
+            {
+                // return Conflict();
+                return BadRequest("Conflict in addition: " + dux.Message);
+            }
+            catch (Exception e) { return BadRequest("error in addition: " + e.Message); }
+
+
+            return Content(HttpStatusCode.Created, retnotesData);
             //CreatedAtRoute("DefaultApi", new { id = notesData.UserID }, notesData);
         }
 
         // DELETE: api/NotesDatas/userid/guid
-        // [ValidateHttpAntiForgeryToken]
+        [ValidateHttpAntiForgeryToken]
         [Route("api/NotesDatas/{id}/{noteid}")]
         [ResponseType(typeof(NotesData))]
         public IHttpActionResult DeleteNotesData(string id, string noteid)
         {
-            NotesData notesData;
-            //notesData = db.NotesDatas.Find(id, new Guid(noteid));
+            NotesData retnotesData;
+            
             try
             {
                 Guid noteguid = new Guid(noteid);
 
-                if (!NotesDataExists(id, noteguid))
-                {
-                    return NotFound();
-                }
-
-                notesData = db.NotesDatas.Single(m => m.UserID == id && m.GuidID == noteguid);
-
-                db.NotesDatas.Remove(notesData);
-                db.SaveChanges();
-
-                return Ok(notesData);
+                
+                retnotesData = notesRepository.DeleteNotesData(id, noteid);
+                
+                return Ok(retnotesData);
 
             }
+            catch(KeyNotFoundException) { return BadRequest("Note not found:"); }
             catch (InvalidOperationException)
             {
                 return BadRequest("Multiple Record found for note id:" + noteid);
             }
-       }
+            catch(Exception e) { return BadRequest("Error in deletion:" + e.Message); }
+        }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                notesRepository.Dispose();
             }
 
             base.Dispose(disposing);
         }
-
-        private bool NotesDataExists(string id, Guid noteid )
+        
+        public new void Dispose()
         {
-            return db.NotesDatas.Count(e => e.UserID == id && e.GuidID == noteid) > 0;
-        }
-        private bool NotesDataExists(string id, string noteid)
-        {
-            return db.NotesDatas.Count(e => e.UserID == id && e.GuidID == new Guid(noteid)) > 0;
-        }
-        private bool NotesDataExists(string id)
-        {
-            return db.NotesDatas.Count(e => e.UserID == id) > 0;
-        }
-        private NotesData VerifyNotesTimestamp(Guid noteid)
-        {
-            return db.NotesDatas.SingleOrDefault(m => m.GuidID == noteid);            
+            base.Dispose();
+            
         }
     }
-
-    
 }
