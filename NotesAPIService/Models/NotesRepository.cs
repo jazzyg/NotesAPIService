@@ -20,7 +20,7 @@ namespace NotesAPIService.Models
             this.db = db;
         }
 
-        
+
         // GET: api/NotesDatas/test11@test.com       
         //public IQueryable<NotesData> GetNotesDatas(string id)
         //{
@@ -36,13 +36,13 @@ namespace NotesAPIService.Models
 
                 return list;
             }
-            catch 
+            catch
             {
                 throw;
             }
         }
 
-    
+
         public NotesData GetNotesData(Guid noteid)
         {
             //NotesData notesData = db.NotesDatas.Find(id); //find search only one key
@@ -51,16 +51,16 @@ namespace NotesAPIService.Models
                 NotesData notesData = db.NotesDatas.SingleOrDefault(m => m.GuidID == noteid);
 
                 return notesData;
-            }    
+            }
             catch
             {
                 throw;
             }
         }
-       
+
         public NotesData PutNotesData(string id, NotesData notesData)
         {
-            
+
             if ((notesData.GuidID == null || notesData.GuidID == new Guid()))
             {
                 throw new InvalidDataException("Invalid notes key values");
@@ -96,7 +96,7 @@ namespace NotesAPIService.Models
                 {
                     throw new KeyNotFoundException("Invalid Note key");
                 }
-                else 
+                else
                 {
                     throw new DbUpdateException("Error in updating notes");
                 }
@@ -112,7 +112,7 @@ namespace NotesAPIService.Models
 
         public NotesData PostNotesData(NotesData notesData)
         {
-           
+
 
             //We are creating new note for userid. so no mote data should be provided. 
             if (string.IsNullOrEmpty(notesData.UserID))
@@ -143,10 +143,10 @@ namespace NotesAPIService.Models
             }
 
             return notesData;
-            
+
         }
 
-     
+
         public NotesData DeleteNotesData(string id, string noteid)
         {
             NotesData notesData;
@@ -176,7 +176,7 @@ namespace NotesAPIService.Models
 
         private bool disposed = false;
 
-       protected virtual void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
             {
@@ -193,7 +193,7 @@ namespace NotesAPIService.Models
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-       
+
 
         private bool NotesDataExists(string id, Guid noteid)
         {
@@ -211,7 +211,5 @@ namespace NotesAPIService.Models
         {
             return db.NotesDatas.SingleOrDefault(m => m.GuidID == noteid);
         }
-
-       
     }
 }

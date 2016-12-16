@@ -34,7 +34,7 @@ namespace NotesAPIService.Models
         public string LoginProvider { get; set; }
     }
 
-    public class UserLoginInfoViewModel
+    public class UserLoginInfoViewModel : ApplicationUserManager
     {
         public string LoginProvider { get; set; }
 

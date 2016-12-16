@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="NotesAPIService.Controllers.NotesDatasController">
+    <Position X="20.25" Y="7" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAABIAAAASAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAggA=</HashCode>
+      <FileName>Controllers\NotesDatasController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotesAPIService.Models.NotesRepository" BaseTypeListCollapsed="true">
+    <Position X="15.75" Y="3.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAIBIAAAASAQAAAAAAAACAAAAAAAAAAAQAAAQAAAgAA=</HashCode>
+      <FileName>Models\NotesRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="db" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="NotesAPIService.Models.NotesData">
+    <Position X="15.25" Y="7.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAQAAAEAgAAAAAAhAAAAAAAEAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\NotesData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotesAPIService.Models.NotesAPIServiceContext">
+    <Position X="16.5" Y="1.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\NotesAPIServiceContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="NotesDatas" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="NotesAPIService.Models.HtmlToText">
+    <Position X="19.25" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAACACAAAACAAAAAAIAAAAAAAAAAACAAAAAAAAEAAAA=</HashCode>
+      <FileName>Models\HtmlToText.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="NotesRepository" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="System.Data.Entity.DbSet&lt;TEntity&gt;" Collapsed="true">
+    <Position X="13.75" Y="1.5" Width="1.75" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NotesAPIService.Controllers.AccountController">
+    <Position X="11.25" Y="9.25" Width="1.5" />
+    <NestedTypes>
+      <Class Name="NotesAPIService.Controllers.AccountController.ExternalLoginData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Controllers\AccountController.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="NotesAPIService.Controllers.AccountController.RandomOAuthStateGenerator" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Controllers\AccountController.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>EAAAFACAACAAgQAQEAARAgIAABABEBAQAAAAgAAAAQA=</HashCode>
+      <FileName>Controllers\AccountController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ApplicationUser" />
+      <Property Name="ApplicationUserManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="NotesAPIService.Models.UserLoginInfoViewModel">
+    <Position X="5.5" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAABAAAAAAAAA=</HashCode>
+      <FileName>Models\AccountViewModels.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotesAPIService.Models.RegisterBindingModel">
+    <Position X="8.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAAIAA=</HashCode>
+      <FileName>Models\AccountBindingModels.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="UserManager" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="NotesAPIService.Models.ApplicationUser">
+    <Position X="4.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\IdentityModels.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ApplicationOAuthProvider" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="NotesAPIService.Models.ApplicationDbContext">
+    <Position X="11" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\IdentityModels.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="AccountController" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Microsoft.AspNet.Identity.EntityFramework.IdentityDbContext&lt;TUser&gt;">
+    <Position X="11" Y="5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Microsoft.AspNet.Identity.EntityFramework.IdentityUser" Collapsed="true">
+    <Position X="4.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NotesAPIService.Providers.ApplicationOAuthProvider">
+    <Position X="5.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAACAAAAAAAAAAAAAEAAEIAAAAAAAAAAAgA=</HashCode>
+      <FileName>Providers\ApplicationOAuthProvider.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotesAPIService.Results.ChallengeResult" Collapsed="true">
+    <Position X="11.5" Y="14.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAkAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Results\ChallengeResult.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="AccountController" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="NotesAPIService.ApplicationUserManager">
+    <Position X="5.5" Y="12.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>App_Start\IdentityConfig.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Microsoft.AspNet.Identity.UserManager&lt;TUser&gt;" Collapsed="true">
+    <Position X="5.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Microsoft.Owin.Security.OAuth.OAuthAuthorizationServerProvider" Collapsed="true">
+    <Position X="5.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Microsoft.AspNet.Identity.UserManager&lt;TUser, TKey&gt;">
+    <Position X="0.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="NotesAPIService.Models.INotesRepository">
+    <Position X="21.75" Y="4" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAADIAAAAQAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAgAA=</HashCode>
+      <FileName>Models\INotesRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="NotesRepository" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="System.IDisposable" Collapsed="true">
+    <Position X="21.75" Y="2.75" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Tahoma" Size="8.4" />
+</ClassDiagram>

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NotesAPIService.Models
 {
-    public class NotesData 
+    public class NotesData : NotesRepository
     {
         [Key]
         [Column(Order = 0)]
@@ -32,7 +32,7 @@ namespace NotesAPIService.Models
         [NotMapped]
         public Int32 syncstatus { get { return 0; } }
 
-    
+
 
     }
 

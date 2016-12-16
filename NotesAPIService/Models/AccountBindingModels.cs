@@ -48,6 +48,18 @@ namespace NotesAPIService.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public Microsoft.AspNet.Identity.UserManager<object> UserManager
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+
+            set
+            {
+            }
+        }
     }
 
     public class RegisterExternalBindingModel

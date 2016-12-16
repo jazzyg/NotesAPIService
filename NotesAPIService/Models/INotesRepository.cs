@@ -9,6 +9,8 @@ namespace NotesAPIService.Models
 {
     public interface INotesRepository: IDisposable
     {
+        NotesRepository NotesRepository { get; set; }
+
         List<NotesData> GetNotesDatas(string userid);
         NotesData GetNotesData(Guid noteid);
         NotesData PutNotesData(string id, NotesData notesData);

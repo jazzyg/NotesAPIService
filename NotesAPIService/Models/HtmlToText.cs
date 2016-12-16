@@ -13,6 +13,18 @@ namespace NotesAPIService.Models
         {
         }
 
+        public NotesRepository NotesRepository
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+
+            set
+            {
+            }
+        }
+
         public string Convertchars(string html, int chars)
         {
             string str = ConvertHtml(html);
