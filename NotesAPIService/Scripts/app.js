@@ -354,6 +354,7 @@
         header.notes = 'Test notes from js file';
         header.guidid = '121755ce-7b9d-4834-b6cb-06241bcb19bd';
         header.userID = usr;
+        header.UpdateDate = new Date();
 
         if (token) {
             header.Authorization = 'Bearer ' + token;

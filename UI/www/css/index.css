@@ -204,3 +204,32 @@ h1 {
     border-color: #7ea700 !important;
     background-color: #7ea700 !important;
 }
+
+#log-out-button {
+    background: none !important;;
+    border: none !important;
+    text-align: left;
+}
+
+.note-status-1 {
+    color: Red;
+}
+
+.note-status-0 {
+    color: Black !important;
+}
+
+.k-editor{
+    width: 100% !important;;
+}
+
+#envGrid .k-grid-delete {
+    font-size: 0 !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    text-align: left;
+}
+
+#envGrid .k-grid-delete span{
+    display: inline-block !important;
+}

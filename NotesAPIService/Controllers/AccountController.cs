@@ -22,7 +22,7 @@ namespace NotesAPIService.Controllers
 {
     [Authorize]
     [RoutePrefix("api/Account")]
-    public class AccountController : ApiController
+    public class AccountController
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
@@ -126,7 +126,7 @@ namespace NotesAPIService.Controllers
 
             IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword,
                 model.NewPassword);
-            
+
             if (!result.Succeeded)
             {
                 return GetErrorResult(result);
@@ -192,7 +192,7 @@ namespace NotesAPIService.Controllers
 
             return Ok();
         }
-        
+
 
         // POST api/Account/RemoveLogin
         [Route("RemoveLogin")]
@@ -262,9 +262,9 @@ namespace NotesAPIService.Controllers
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-                
-                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                    OAuthDefaults.AuthenticationType);
+
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
+                   OAuthDefaults.AuthenticationType);
                 ClaimsIdentity cookieIdentity = await user.GenerateUserIdentityAsync(UserManager,
                     CookieAuthenticationDefaults.AuthenticationType);
 
@@ -372,7 +372,7 @@ namespace NotesAPIService.Controllers
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
             {
-                return GetErrorResult(result); 
+                return GetErrorResult(result);
             }
             return Ok();
         }
@@ -495,5 +495,29 @@ namespace NotesAPIService.Controllers
         }
 
         #endregion
+
+        public ApplicationUser ApplicationUser
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+
+            set
+            {
+            }
+        }
+
+        public ApplicationUserManager ApplicationUserManager
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+
+            set
+            {
+            }
+        }
     }
 }
