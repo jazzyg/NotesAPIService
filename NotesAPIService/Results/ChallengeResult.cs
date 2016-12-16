@@ -21,6 +21,18 @@ namespace NotesAPIService.Results
         public string LoginProvider { get; set; }
         public HttpRequestMessage Request { get; set; }
 
+        public Controllers.AccountController AccountController
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+
+            set
+            {
+            }
+        }
+
         public Task<HttpResponseMessage> ExecuteAsync(CancellationToken cancellationToken)
         {
             Request.GetOwinContext().Authentication.Challenge(LoginProvider);

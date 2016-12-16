@@ -9,6 +9,18 @@ namespace NotesAPIService.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
+        public Providers.ApplicationOAuthProvider ApplicationOAuthProvider
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+
+            set
+            {
+            }
+        }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager, string authenticationType)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -25,7 +37,19 @@ namespace NotesAPIService.Models
         {
             this.Database.Log = s => System.Diagnostics.Debug.WriteLine(s);
         }
-        
+
+        public Controllers.AccountController AccountController
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+
+            set
+            {
+            }
+        }
+
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
